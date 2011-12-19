@@ -8,7 +8,7 @@ and type_constant =
     Datatype of string
   | TFunction of string
   | TArrow
-  | TEquality
+  | TEquality of kind
 
 and fc_type =
     TyVar of string
@@ -44,12 +44,14 @@ and fc_term =
 and branch =
     Branch of string * fc_term
 
-and binder =
-    BTVar of string * kind_and_role
-  | BTConst of string * kind
-  | BCoer of string * type_context * eq_type * role
-  | BTermVar of string * fc_type
-  | BDataCon of string * type_context * fc_type
+and binder = bind_key  * bind_value 
+and bind_key = string 
+and bind_value = 
+  | BTVar of  kind_and_role
+  | BTConst of  kind
+  | BCoer of type_context * eq_type * role
+  | BTermVar of  fc_type
+  | BDataCon of  type_context * fc_type
 
 and context = binder list
 
