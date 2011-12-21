@@ -1,0 +1,4 @@
+
+
+<fc_parser.ml> : pp(camlp4of)
+<fc_parser.{cmo,byte}> : pkg_dynlink, use_camlp4_full

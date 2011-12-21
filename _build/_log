@@ -1,0 +1,6 @@
+### Starting build.
+# Target: fc_syntax.ml.depends, tags: { extension:ml, file:fc_syntax.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules fc_syntax.ml > fc_syntax.ml.depends
+# Target: fc_syntax.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:fc_syntax.cmo, file:fc_syntax.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o fc_syntax.cmo fc_syntax.ml
+# Compilation successful.
