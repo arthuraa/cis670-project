@@ -32,7 +32,7 @@ let _ =
     kind_and_role_entry :
       [ [
         x = "*/"; r = role_entry -> KR(Star,r);
-      | x = TRY kind_entry; "/"; c = role_entry -> KR(x,c)
+      | x = SELF ; "->" kind_entry; "/"; c = role_entry -> KR(x,c)
       | "("; x = SELF ;")" -> x 
       ] ] ;
   END 
