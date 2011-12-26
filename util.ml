@@ -1,6 +1,15 @@
 open Fc_syntax
 
 let (|>) x f = f x
+let finally handler f x =
+  let r = (
+    try
+      f x
+    with
+	e -> handler(); raise e
+  ) in
+  handler();
+  r
 
 let rec type_subst (var : string) (ty1 : fc_type) (ty2 : fc_type) =
   (* ty2 should be closed to avoid variable capture *)

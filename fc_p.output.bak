@@ -1,0 +1,1726 @@
+   0  $accept : %entry% $end
+
+   1  kind : STAR
+   2       | kind_and_role ARROW kind
+   3       | LPAREN kind RPAREN
+
+   4  kind_and_role : LPAREN kind RPAREN SLASH role
+   5                | STAR SLASH role
+
+   6  role : CODE
+   7       | TYPE
+
+   8  ty_def : LIDENT
+   9         | LPAREN ARROW RPAREN
+  10         | LPAREN TILDE kind RPAREN
+  11         | UIDENT
+  12         | ty_def ty_def
+  13         | FORALL LIDENT COLON kind_and_role ty_def
+  14         | LPAREN ty_def RPAREN
+
+  15  term : LIDENT
+  16       | LAMBDA LPAREN LIDENT COLON ty_def RPAREN ARROW term
+  17       | term term
+  18       | BLAMBDA LPAREN LIDENT COLON kind_and_role RPAREN ARROW term
+  19       | term ty_def
+  20       | UIDENT
+  21       | CASE LPAREN ty_def COMMA term RPAREN branches
+  22       | BLAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term
+  23       | term proof
+  24       | term BARROW proof
+  25       | LPAREN term RPAREN
+
+  26  branches : LBRACKET bs RBRACKET
+
+  27  bs :
+  28     | bs SEMI UIDENT ARROW term
+
+  29  proof : LIDENT
+  30        | LTRI ty_def RTRI
+  31        | SYM proof
+  32        | proof SEMI proof
+  33        | proof proof
+  34        | NTH INT proof
+  35        | FORALL LPAREN LIDENT COLON kind_and_role RPAREN proof
+  36        | proof AT ty_def
+
+  37  %entry% : '\001' kind
+  38          | '\002' kind_and_role
+  39          | '\003' ty_def
+  40          | '\004' term
+  41          | '\005' proof
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	'\002'  shift 2
+	'\003'  shift 3
+	'\004'  shift 4
+	'\005'  shift 5
+	.  error
+
+	%entry%  goto 6
+
+
+state 1
+	%entry% : '\001' . kind  (37)
+
+	STAR  shift 7
+	LPAREN  shift 8
+	.  error
+
+	kind  goto 9
+	kind_and_role  goto 10
+
+
+state 2
+	%entry% : '\002' . kind_and_role  (38)
+
+	STAR  shift 11
+	LPAREN  shift 12
+	.  error
+
+	kind_and_role  goto 13
+
+
+state 3
+	%entry% : '\003' . ty_def  (39)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 18
+
+
+state 4
+	%entry% : '\004' . term  (40)
+
+	LPAREN  shift 19
+	LIDENT  shift 20
+	UIDENT  shift 21
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	.  error
+
+	term  goto 25
+
+
+state 5
+	%entry% : '\005' . proof  (41)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	.  error
+
+	proof  goto 31
+
+
+state 6
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 7
+	kind : STAR .  (1)
+	kind_and_role : STAR . SLASH role  (5)
+
+	SLASH  shift 32
+	$end  reduce 1
+	RPAREN  reduce 1
+
+
+state 8
+	kind : LPAREN . kind RPAREN  (3)
+	kind_and_role : LPAREN . kind RPAREN SLASH role  (4)
+
+	STAR  shift 7
+	LPAREN  shift 8
+	.  error
+
+	kind  goto 33
+	kind_and_role  goto 10
+
+
+state 9
+	%entry% : '\001' kind .  (37)
+
+	.  reduce 37
+
+
+state 10
+	kind : kind_and_role . ARROW kind  (2)
+
+	ARROW  shift 34
+	.  error
+
+
+state 11
+	kind_and_role : STAR . SLASH role  (5)
+
+	SLASH  shift 32
+	.  error
+
+
+state 12
+	kind_and_role : LPAREN . kind RPAREN SLASH role  (4)
+
+	STAR  shift 7
+	LPAREN  shift 8
+	.  error
+
+	kind  goto 35
+	kind_and_role  goto 10
+
+
+state 13
+	%entry% : '\002' kind_and_role .  (38)
+
+	.  reduce 38
+
+
+state 14
+	ty_def : LPAREN . ARROW RPAREN  (9)
+	ty_def : LPAREN . TILDE kind RPAREN  (10)
+	ty_def : LPAREN . ty_def RPAREN  (14)
+
+	ARROW  shift 36
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	TILDE  shift 37
+	.  error
+
+	ty_def  goto 38
+
+
+state 15
+	ty_def : LIDENT .  (8)
+
+	.  reduce 8
+
+
+state 16
+	ty_def : UIDENT .  (11)
+
+	.  reduce 11
+
+
+state 17
+	ty_def : FORALL . LIDENT COLON kind_and_role ty_def  (13)
+
+	LIDENT  shift 39
+	.  error
+
+
+state 18
+	ty_def : ty_def . ty_def  (12)
+	%entry% : '\003' ty_def .  (39)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	$end  reduce 39
+
+	ty_def  goto 40
+
+
+state 19
+	term : LPAREN . term RPAREN  (25)
+
+	LPAREN  shift 19
+	LIDENT  shift 20
+	UIDENT  shift 21
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	.  error
+
+	term  goto 41
+
+
+state 20
+	term : LIDENT .  (15)
+
+	.  reduce 15
+
+
+state 21
+	term : UIDENT .  (20)
+
+	.  reduce 20
+
+
+state 22
+	term : LAMBDA . LPAREN LIDENT COLON ty_def RPAREN ARROW term  (16)
+
+	LPAREN  shift 42
+	.  error
+
+
+state 23
+	term : BLAMBDA . LPAREN LIDENT COLON kind_and_role RPAREN ARROW term  (18)
+	term : BLAMBDA . LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term  (22)
+
+	LPAREN  shift 43
+	.  error
+
+
+state 24
+	term : CASE . LPAREN ty_def COMMA term RPAREN branches  (21)
+
+	LPAREN  shift 44
+	.  error
+
+
+state 25
+	term : term . term  (17)
+	term : term . ty_def  (19)
+	term : term . proof  (23)
+	term : term . BARROW proof  (24)
+	%entry% : '\004' term .  (40)
+
+	LPAREN  shift 45
+	LIDENT  shift 46
+	UIDENT  shift 47
+	FORALL  shift 48
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	BARROW  shift 49
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	$end  reduce 40
+
+	ty_def  goto 50
+	term  goto 51
+	proof  goto 52
+
+
+state 26
+	proof : LIDENT .  (29)
+
+	.  reduce 29
+
+
+state 27
+	proof : FORALL . LPAREN LIDENT COLON kind_and_role RPAREN proof  (35)
+
+	LPAREN  shift 53
+	.  error
+
+
+state 28
+	proof : LTRI . ty_def RTRI  (30)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 54
+
+
+state 29
+	proof : SYM . proof  (31)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	.  error
+
+	proof  goto 55
+
+
+state 30
+	proof : NTH . INT proof  (34)
+
+	INT  shift 56
+	.  error
+
+
+state 31
+	proof : proof . SEMI proof  (32)
+	proof : proof . proof  (33)
+	proof : proof . AT ty_def  (36)
+	%entry% : '\005' proof .  (41)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	SEMI  shift 57
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	AT  shift 58
+	$end  reduce 41
+
+	proof  goto 59
+
+
+state 32
+	kind_and_role : STAR SLASH . role  (5)
+
+	CODE  shift 60
+	TYPE  shift 61
+	.  error
+
+	role  goto 62
+
+
+state 33
+	kind : LPAREN kind . RPAREN  (3)
+	kind_and_role : LPAREN kind . RPAREN SLASH role  (4)
+
+	RPAREN  shift 63
+	.  error
+
+
+state 34
+	kind : kind_and_role ARROW . kind  (2)
+
+	STAR  shift 7
+	LPAREN  shift 8
+	.  error
+
+	kind  goto 64
+	kind_and_role  goto 10
+
+
+state 35
+	kind_and_role : LPAREN kind . RPAREN SLASH role  (4)
+
+	RPAREN  shift 65
+	.  error
+
+
+state 36
+	ty_def : LPAREN ARROW . RPAREN  (9)
+
+	RPAREN  shift 66
+	.  error
+
+
+state 37
+	ty_def : LPAREN TILDE . kind RPAREN  (10)
+
+	STAR  shift 7
+	LPAREN  shift 8
+	.  error
+
+	kind  goto 67
+	kind_and_role  goto 10
+
+
+state 38
+	ty_def : ty_def . ty_def  (12)
+	ty_def : LPAREN ty_def . RPAREN  (14)
+
+	LPAREN  shift 14
+	RPAREN  shift 68
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 40
+
+
+state 39
+	ty_def : FORALL LIDENT . COLON kind_and_role ty_def  (13)
+
+	COLON  shift 69
+	.  error
+
+
+40: shift/reduce conflict (shift 14, reduce 12) on LPAREN
+40: shift/reduce conflict (shift 15, reduce 12) on LIDENT
+40: shift/reduce conflict (shift 16, reduce 12) on UIDENT
+40: shift/reduce conflict (shift 17, reduce 12) on FORALL
+state 40
+	ty_def : ty_def . ty_def  (12)
+	ty_def : ty_def ty_def .  (12)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	$end  reduce 12
+	ARROW  reduce 12
+	RPAREN  reduce 12
+	TILDE  reduce 12
+	LAMBDA  reduce 12
+	BLAMBDA  reduce 12
+	CASE  reduce 12
+	SEMI  reduce 12
+	COMMA  reduce 12
+	BARROW  reduce 12
+	RBRACKET  reduce 12
+	LTRI  reduce 12
+	RTRI  reduce 12
+	SYM  reduce 12
+	NTH  reduce 12
+	AT  reduce 12
+
+	ty_def  goto 40
+
+
+state 41
+	term : term . term  (17)
+	term : term . ty_def  (19)
+	term : term . proof  (23)
+	term : term . BARROW proof  (24)
+	term : LPAREN term . RPAREN  (25)
+
+	LPAREN  shift 45
+	RPAREN  shift 70
+	LIDENT  shift 46
+	UIDENT  shift 47
+	FORALL  shift 48
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	BARROW  shift 49
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	.  error
+
+	ty_def  goto 50
+	term  goto 51
+	proof  goto 52
+
+
+state 42
+	term : LAMBDA LPAREN . LIDENT COLON ty_def RPAREN ARROW term  (16)
+
+	LIDENT  shift 71
+	.  error
+
+
+state 43
+	term : BLAMBDA LPAREN . LIDENT COLON kind_and_role RPAREN ARROW term  (18)
+	term : BLAMBDA LPAREN . LIDENT COLON ty_def TILDE ty_def ARROW term  (22)
+
+	LIDENT  shift 72
+	.  error
+
+
+state 44
+	term : CASE LPAREN . ty_def COMMA term RPAREN branches  (21)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 73
+
+
+state 45
+	ty_def : LPAREN . ARROW RPAREN  (9)
+	ty_def : LPAREN . TILDE kind RPAREN  (10)
+	ty_def : LPAREN . ty_def RPAREN  (14)
+	term : LPAREN . term RPAREN  (25)
+
+	ARROW  shift 36
+	LPAREN  shift 45
+	LIDENT  shift 74
+	UIDENT  shift 47
+	FORALL  shift 17
+	TILDE  shift 37
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	.  error
+
+	ty_def  goto 38
+	term  goto 41
+
+
+46: reduce/reduce conflict (reduce 8, reduce 15) on $end
+46: reduce/reduce conflict (reduce 8, reduce 29) on $end
+46: reduce/reduce conflict (reduce 8, reduce 15) on LPAREN
+46: reduce/reduce conflict (reduce 8, reduce 29) on LPAREN
+46: reduce/reduce conflict (reduce 8, reduce 15) on RPAREN
+46: reduce/reduce conflict (reduce 8, reduce 29) on RPAREN
+46: reduce/reduce conflict (reduce 8, reduce 15) on LIDENT
+46: reduce/reduce conflict (reduce 8, reduce 29) on LIDENT
+46: reduce/reduce conflict (reduce 8, reduce 15) on UIDENT
+46: reduce/reduce conflict (reduce 8, reduce 29) on UIDENT
+46: reduce/reduce conflict (reduce 8, reduce 15) on FORALL
+46: reduce/reduce conflict (reduce 8, reduce 29) on FORALL
+46: reduce/reduce conflict (reduce 8, reduce 15) on LAMBDA
+46: reduce/reduce conflict (reduce 8, reduce 29) on LAMBDA
+46: reduce/reduce conflict (reduce 8, reduce 15) on BLAMBDA
+46: reduce/reduce conflict (reduce 8, reduce 29) on BLAMBDA
+46: reduce/reduce conflict (reduce 8, reduce 15) on CASE
+46: reduce/reduce conflict (reduce 8, reduce 29) on CASE
+46: reduce/reduce conflict (reduce 8, reduce 15) on SEMI
+46: reduce/reduce conflict (reduce 8, reduce 29) on SEMI
+46: reduce/reduce conflict (reduce 8, reduce 15) on BARROW
+46: reduce/reduce conflict (reduce 8, reduce 29) on BARROW
+46: reduce/reduce conflict (reduce 8, reduce 15) on RBRACKET
+46: reduce/reduce conflict (reduce 8, reduce 29) on RBRACKET
+46: reduce/reduce conflict (reduce 8, reduce 15) on LTRI
+46: reduce/reduce conflict (reduce 8, reduce 29) on LTRI
+46: reduce/reduce conflict (reduce 8, reduce 15) on SYM
+46: reduce/reduce conflict (reduce 8, reduce 29) on SYM
+46: reduce/reduce conflict (reduce 8, reduce 15) on NTH
+46: reduce/reduce conflict (reduce 8, reduce 29) on NTH
+state 46
+	ty_def : LIDENT .  (8)
+	term : LIDENT .  (15)
+	proof : LIDENT .  (29)
+
+	$end  reduce 8
+	LPAREN  reduce 8
+	RPAREN  reduce 8
+	LIDENT  reduce 8
+	UIDENT  reduce 8
+	FORALL  reduce 8
+	LAMBDA  reduce 8
+	BLAMBDA  reduce 8
+	CASE  reduce 8
+	SEMI  reduce 8
+	BARROW  reduce 8
+	RBRACKET  reduce 8
+	LTRI  reduce 8
+	SYM  reduce 8
+	NTH  reduce 8
+	AT  reduce 29
+
+
+47: reduce/reduce conflict (reduce 11, reduce 20) on $end
+47: reduce/reduce conflict (reduce 11, reduce 20) on LPAREN
+47: reduce/reduce conflict (reduce 11, reduce 20) on RPAREN
+47: reduce/reduce conflict (reduce 11, reduce 20) on LIDENT
+47: reduce/reduce conflict (reduce 11, reduce 20) on UIDENT
+47: reduce/reduce conflict (reduce 11, reduce 20) on FORALL
+47: reduce/reduce conflict (reduce 11, reduce 20) on LAMBDA
+47: reduce/reduce conflict (reduce 11, reduce 20) on BLAMBDA
+47: reduce/reduce conflict (reduce 11, reduce 20) on CASE
+47: reduce/reduce conflict (reduce 11, reduce 20) on SEMI
+47: reduce/reduce conflict (reduce 11, reduce 20) on BARROW
+47: reduce/reduce conflict (reduce 11, reduce 20) on RBRACKET
+47: reduce/reduce conflict (reduce 11, reduce 20) on LTRI
+47: reduce/reduce conflict (reduce 11, reduce 20) on SYM
+47: reduce/reduce conflict (reduce 11, reduce 20) on NTH
+state 47
+	ty_def : UIDENT .  (11)
+	term : UIDENT .  (20)
+
+	.  reduce 11
+
+
+state 48
+	ty_def : FORALL . LIDENT COLON kind_and_role ty_def  (13)
+	proof : FORALL . LPAREN LIDENT COLON kind_and_role RPAREN proof  (35)
+
+	LPAREN  shift 53
+	LIDENT  shift 39
+	.  error
+
+
+state 49
+	term : term BARROW . proof  (24)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	.  error
+
+	proof  goto 75
+
+
+50: shift/reduce conflict (shift 14, reduce 19) on LPAREN
+50: shift/reduce conflict (shift 15, reduce 19) on LIDENT
+50: shift/reduce conflict (shift 16, reduce 19) on UIDENT
+50: shift/reduce conflict (shift 17, reduce 19) on FORALL
+state 50
+	ty_def : ty_def . ty_def  (12)
+	term : term ty_def .  (19)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	$end  reduce 19
+	RPAREN  reduce 19
+	LAMBDA  reduce 19
+	BLAMBDA  reduce 19
+	CASE  reduce 19
+	SEMI  reduce 19
+	BARROW  reduce 19
+	RBRACKET  reduce 19
+	LTRI  reduce 19
+	SYM  reduce 19
+	NTH  reduce 19
+
+	ty_def  goto 40
+
+
+51: shift/reduce conflict (shift 45, reduce 17) on LPAREN
+51: shift/reduce conflict (shift 46, reduce 17) on LIDENT
+51: shift/reduce conflict (shift 47, reduce 17) on UIDENT
+51: shift/reduce conflict (shift 48, reduce 17) on FORALL
+51: shift/reduce conflict (shift 22, reduce 17) on LAMBDA
+51: shift/reduce conflict (shift 23, reduce 17) on BLAMBDA
+51: shift/reduce conflict (shift 24, reduce 17) on CASE
+51: shift/reduce conflict (shift 49, reduce 17) on BARROW
+51: shift/reduce conflict (shift 28, reduce 17) on LTRI
+51: shift/reduce conflict (shift 29, reduce 17) on SYM
+51: shift/reduce conflict (shift 30, reduce 17) on NTH
+state 51
+	term : term . term  (17)
+	term : term term .  (17)
+	term : term . ty_def  (19)
+	term : term . proof  (23)
+	term : term . BARROW proof  (24)
+
+	LPAREN  shift 45
+	LIDENT  shift 46
+	UIDENT  shift 47
+	FORALL  shift 48
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	BARROW  shift 49
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	$end  reduce 17
+	RPAREN  reduce 17
+	SEMI  reduce 17
+	RBRACKET  reduce 17
+
+	ty_def  goto 50
+	term  goto 51
+	proof  goto 52
+
+
+52: shift/reduce conflict (shift 26, reduce 23) on LIDENT
+52: shift/reduce conflict (shift 27, reduce 23) on FORALL
+52: shift/reduce conflict (shift 57, reduce 23) on SEMI
+52: shift/reduce conflict (shift 28, reduce 23) on LTRI
+52: shift/reduce conflict (shift 29, reduce 23) on SYM
+52: shift/reduce conflict (shift 30, reduce 23) on NTH
+state 52
+	term : term proof .  (23)
+	proof : proof . SEMI proof  (32)
+	proof : proof . proof  (33)
+	proof : proof . AT ty_def  (36)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	SEMI  shift 57
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	AT  shift 58
+	$end  reduce 23
+	LPAREN  reduce 23
+	RPAREN  reduce 23
+	UIDENT  reduce 23
+	LAMBDA  reduce 23
+	BLAMBDA  reduce 23
+	CASE  reduce 23
+	BARROW  reduce 23
+	RBRACKET  reduce 23
+
+	proof  goto 59
+
+
+state 53
+	proof : FORALL LPAREN . LIDENT COLON kind_and_role RPAREN proof  (35)
+
+	LIDENT  shift 76
+	.  error
+
+
+state 54
+	ty_def : ty_def . ty_def  (12)
+	proof : LTRI ty_def . RTRI  (30)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	RTRI  shift 77
+	.  error
+
+	ty_def  goto 40
+
+
+55: shift/reduce conflict (shift 26, reduce 31) on LIDENT
+55: shift/reduce conflict (shift 27, reduce 31) on FORALL
+55: shift/reduce conflict (shift 57, reduce 31) on SEMI
+55: shift/reduce conflict (shift 28, reduce 31) on LTRI
+55: shift/reduce conflict (shift 29, reduce 31) on SYM
+55: shift/reduce conflict (shift 30, reduce 31) on NTH
+55: shift/reduce conflict (shift 58, reduce 31) on AT
+state 55
+	proof : SYM proof .  (31)
+	proof : proof . SEMI proof  (32)
+	proof : proof . proof  (33)
+	proof : proof . AT ty_def  (36)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	SEMI  shift 57
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	AT  shift 58
+	$end  reduce 31
+	LPAREN  reduce 31
+	RPAREN  reduce 31
+	UIDENT  reduce 31
+	LAMBDA  reduce 31
+	BLAMBDA  reduce 31
+	CASE  reduce 31
+	BARROW  reduce 31
+	RBRACKET  reduce 31
+
+	proof  goto 59
+
+
+state 56
+	proof : NTH INT . proof  (34)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	.  error
+
+	proof  goto 78
+
+
+state 57
+	proof : proof SEMI . proof  (32)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	.  error
+
+	proof  goto 79
+
+
+state 58
+	proof : proof AT . ty_def  (36)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 80
+
+
+59: shift/reduce conflict (shift 26, reduce 33) on LIDENT
+59: shift/reduce conflict (shift 27, reduce 33) on FORALL
+59: shift/reduce conflict (shift 57, reduce 33) on SEMI
+59: shift/reduce conflict (shift 28, reduce 33) on LTRI
+59: shift/reduce conflict (shift 29, reduce 33) on SYM
+59: shift/reduce conflict (shift 30, reduce 33) on NTH
+59: shift/reduce conflict (shift 58, reduce 33) on AT
+state 59
+	proof : proof . SEMI proof  (32)
+	proof : proof . proof  (33)
+	proof : proof proof .  (33)
+	proof : proof . AT ty_def  (36)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	SEMI  shift 57
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	AT  shift 58
+	$end  reduce 33
+	LPAREN  reduce 33
+	RPAREN  reduce 33
+	UIDENT  reduce 33
+	LAMBDA  reduce 33
+	BLAMBDA  reduce 33
+	CASE  reduce 33
+	BARROW  reduce 33
+	RBRACKET  reduce 33
+
+	proof  goto 59
+
+
+state 60
+	role : CODE .  (6)
+
+	.  reduce 6
+
+
+state 61
+	role : TYPE .  (7)
+
+	.  reduce 7
+
+
+state 62
+	kind_and_role : STAR SLASH role .  (5)
+
+	.  reduce 5
+
+
+state 63
+	kind : LPAREN kind RPAREN .  (3)
+	kind_and_role : LPAREN kind RPAREN . SLASH role  (4)
+
+	SLASH  shift 81
+	$end  reduce 3
+	RPAREN  reduce 3
+
+
+state 64
+	kind : kind_and_role ARROW kind .  (2)
+
+	.  reduce 2
+
+
+state 65
+	kind_and_role : LPAREN kind RPAREN . SLASH role  (4)
+
+	SLASH  shift 81
+	.  error
+
+
+state 66
+	ty_def : LPAREN ARROW RPAREN .  (9)
+
+	.  reduce 9
+
+
+state 67
+	ty_def : LPAREN TILDE kind . RPAREN  (10)
+
+	RPAREN  shift 82
+	.  error
+
+
+state 68
+	ty_def : LPAREN ty_def RPAREN .  (14)
+
+	.  reduce 14
+
+
+state 69
+	ty_def : FORALL LIDENT COLON . kind_and_role ty_def  (13)
+
+	STAR  shift 11
+	LPAREN  shift 12
+	.  error
+
+	kind_and_role  goto 83
+
+
+state 70
+	term : LPAREN term RPAREN .  (25)
+
+	.  reduce 25
+
+
+state 71
+	term : LAMBDA LPAREN LIDENT . COLON ty_def RPAREN ARROW term  (16)
+
+	COLON  shift 84
+	.  error
+
+
+state 72
+	term : BLAMBDA LPAREN LIDENT . COLON kind_and_role RPAREN ARROW term  (18)
+	term : BLAMBDA LPAREN LIDENT . COLON ty_def TILDE ty_def ARROW term  (22)
+
+	COLON  shift 85
+	.  error
+
+
+state 73
+	ty_def : ty_def . ty_def  (12)
+	term : CASE LPAREN ty_def . COMMA term RPAREN branches  (21)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	COMMA  shift 86
+	.  error
+
+	ty_def  goto 40
+
+
+74: reduce/reduce conflict (reduce 8, reduce 15) on LPAREN
+74: reduce/reduce conflict (reduce 8, reduce 15) on RPAREN
+74: reduce/reduce conflict (reduce 8, reduce 15) on LIDENT
+74: reduce/reduce conflict (reduce 8, reduce 15) on UIDENT
+74: reduce/reduce conflict (reduce 8, reduce 15) on FORALL
+state 74
+	ty_def : LIDENT .  (8)
+	term : LIDENT .  (15)
+
+	LPAREN  reduce 8
+	RPAREN  reduce 8
+	LIDENT  reduce 8
+	UIDENT  reduce 8
+	FORALL  reduce 8
+	LAMBDA  reduce 15
+	BLAMBDA  reduce 15
+	CASE  reduce 15
+	BARROW  reduce 15
+	LTRI  reduce 15
+	SYM  reduce 15
+	NTH  reduce 15
+
+
+75: shift/reduce conflict (shift 26, reduce 24) on LIDENT
+75: shift/reduce conflict (shift 27, reduce 24) on FORALL
+75: shift/reduce conflict (shift 57, reduce 24) on SEMI
+75: shift/reduce conflict (shift 28, reduce 24) on LTRI
+75: shift/reduce conflict (shift 29, reduce 24) on SYM
+75: shift/reduce conflict (shift 30, reduce 24) on NTH
+state 75
+	term : term BARROW proof .  (24)
+	proof : proof . SEMI proof  (32)
+	proof : proof . proof  (33)
+	proof : proof . AT ty_def  (36)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	SEMI  shift 57
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	AT  shift 58
+	$end  reduce 24
+	LPAREN  reduce 24
+	RPAREN  reduce 24
+	UIDENT  reduce 24
+	LAMBDA  reduce 24
+	BLAMBDA  reduce 24
+	CASE  reduce 24
+	BARROW  reduce 24
+	RBRACKET  reduce 24
+
+	proof  goto 59
+
+
+state 76
+	proof : FORALL LPAREN LIDENT . COLON kind_and_role RPAREN proof  (35)
+
+	COLON  shift 87
+	.  error
+
+
+state 77
+	proof : LTRI ty_def RTRI .  (30)
+
+	.  reduce 30
+
+
+78: shift/reduce conflict (shift 26, reduce 34) on LIDENT
+78: shift/reduce conflict (shift 27, reduce 34) on FORALL
+78: shift/reduce conflict (shift 57, reduce 34) on SEMI
+78: shift/reduce conflict (shift 28, reduce 34) on LTRI
+78: shift/reduce conflict (shift 29, reduce 34) on SYM
+78: shift/reduce conflict (shift 30, reduce 34) on NTH
+78: shift/reduce conflict (shift 58, reduce 34) on AT
+state 78
+	proof : proof . SEMI proof  (32)
+	proof : proof . proof  (33)
+	proof : NTH INT proof .  (34)
+	proof : proof . AT ty_def  (36)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	SEMI  shift 57
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	AT  shift 58
+	$end  reduce 34
+	LPAREN  reduce 34
+	RPAREN  reduce 34
+	UIDENT  reduce 34
+	LAMBDA  reduce 34
+	BLAMBDA  reduce 34
+	CASE  reduce 34
+	BARROW  reduce 34
+	RBRACKET  reduce 34
+
+	proof  goto 59
+
+
+79: shift/reduce conflict (shift 26, reduce 32) on LIDENT
+79: shift/reduce conflict (shift 27, reduce 32) on FORALL
+79: shift/reduce conflict (shift 57, reduce 32) on SEMI
+79: shift/reduce conflict (shift 28, reduce 32) on LTRI
+79: shift/reduce conflict (shift 29, reduce 32) on SYM
+79: shift/reduce conflict (shift 30, reduce 32) on NTH
+79: shift/reduce conflict (shift 58, reduce 32) on AT
+state 79
+	proof : proof . SEMI proof  (32)
+	proof : proof SEMI proof .  (32)
+	proof : proof . proof  (33)
+	proof : proof . AT ty_def  (36)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	SEMI  shift 57
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	AT  shift 58
+	$end  reduce 32
+	LPAREN  reduce 32
+	RPAREN  reduce 32
+	UIDENT  reduce 32
+	LAMBDA  reduce 32
+	BLAMBDA  reduce 32
+	CASE  reduce 32
+	BARROW  reduce 32
+	RBRACKET  reduce 32
+
+	proof  goto 59
+
+
+80: shift/reduce conflict (shift 14, reduce 36) on LPAREN
+80: shift/reduce conflict (shift 15, reduce 36) on LIDENT
+80: shift/reduce conflict (shift 16, reduce 36) on UIDENT
+80: shift/reduce conflict (shift 17, reduce 36) on FORALL
+state 80
+	ty_def : ty_def . ty_def  (12)
+	proof : proof AT ty_def .  (36)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	$end  reduce 36
+	RPAREN  reduce 36
+	LAMBDA  reduce 36
+	BLAMBDA  reduce 36
+	CASE  reduce 36
+	SEMI  reduce 36
+	BARROW  reduce 36
+	RBRACKET  reduce 36
+	LTRI  reduce 36
+	SYM  reduce 36
+	NTH  reduce 36
+	AT  reduce 36
+
+	ty_def  goto 40
+
+
+state 81
+	kind_and_role : LPAREN kind RPAREN SLASH . role  (4)
+
+	CODE  shift 60
+	TYPE  shift 61
+	.  error
+
+	role  goto 88
+
+
+state 82
+	ty_def : LPAREN TILDE kind RPAREN .  (10)
+
+	.  reduce 10
+
+
+state 83
+	ty_def : FORALL LIDENT COLON kind_and_role . ty_def  (13)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 89
+
+
+state 84
+	term : LAMBDA LPAREN LIDENT COLON . ty_def RPAREN ARROW term  (16)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 90
+
+
+state 85
+	term : BLAMBDA LPAREN LIDENT COLON . kind_and_role RPAREN ARROW term  (18)
+	term : BLAMBDA LPAREN LIDENT COLON . ty_def TILDE ty_def ARROW term  (22)
+
+	STAR  shift 11
+	LPAREN  shift 91
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	kind_and_role  goto 92
+	ty_def  goto 93
+
+
+state 86
+	term : CASE LPAREN ty_def COMMA . term RPAREN branches  (21)
+
+	LPAREN  shift 19
+	LIDENT  shift 20
+	UIDENT  shift 21
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	.  error
+
+	term  goto 94
+
+
+state 87
+	proof : FORALL LPAREN LIDENT COLON . kind_and_role RPAREN proof  (35)
+
+	STAR  shift 11
+	LPAREN  shift 12
+	.  error
+
+	kind_and_role  goto 95
+
+
+state 88
+	kind_and_role : LPAREN kind RPAREN SLASH role .  (4)
+
+	.  reduce 4
+
+
+89: shift/reduce conflict (shift 14, reduce 13) on LPAREN
+89: shift/reduce conflict (shift 15, reduce 13) on LIDENT
+89: shift/reduce conflict (shift 16, reduce 13) on UIDENT
+89: shift/reduce conflict (shift 17, reduce 13) on FORALL
+state 89
+	ty_def : ty_def . ty_def  (12)
+	ty_def : FORALL LIDENT COLON kind_and_role ty_def .  (13)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	$end  reduce 13
+	ARROW  reduce 13
+	RPAREN  reduce 13
+	TILDE  reduce 13
+	LAMBDA  reduce 13
+	BLAMBDA  reduce 13
+	CASE  reduce 13
+	SEMI  reduce 13
+	COMMA  reduce 13
+	BARROW  reduce 13
+	RBRACKET  reduce 13
+	LTRI  reduce 13
+	RTRI  reduce 13
+	SYM  reduce 13
+	NTH  reduce 13
+	AT  reduce 13
+
+	ty_def  goto 40
+
+
+state 90
+	ty_def : ty_def . ty_def  (12)
+	term : LAMBDA LPAREN LIDENT COLON ty_def . RPAREN ARROW term  (16)
+
+	LPAREN  shift 14
+	RPAREN  shift 96
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 40
+
+
+state 91
+	kind_and_role : LPAREN . kind RPAREN SLASH role  (4)
+	ty_def : LPAREN . ARROW RPAREN  (9)
+	ty_def : LPAREN . TILDE kind RPAREN  (10)
+	ty_def : LPAREN . ty_def RPAREN  (14)
+
+	STAR  shift 7
+	ARROW  shift 36
+	LPAREN  shift 97
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	TILDE  shift 37
+	.  error
+
+	kind  goto 35
+	kind_and_role  goto 10
+	ty_def  goto 38
+
+
+state 92
+	term : BLAMBDA LPAREN LIDENT COLON kind_and_role . RPAREN ARROW term  (18)
+
+	RPAREN  shift 98
+	.  error
+
+
+state 93
+	ty_def : ty_def . ty_def  (12)
+	term : BLAMBDA LPAREN LIDENT COLON ty_def . TILDE ty_def ARROW term  (22)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	TILDE  shift 99
+	.  error
+
+	ty_def  goto 40
+
+
+state 94
+	term : term . term  (17)
+	term : term . ty_def  (19)
+	term : CASE LPAREN ty_def COMMA term . RPAREN branches  (21)
+	term : term . proof  (23)
+	term : term . BARROW proof  (24)
+
+	LPAREN  shift 45
+	RPAREN  shift 100
+	LIDENT  shift 46
+	UIDENT  shift 47
+	FORALL  shift 48
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	BARROW  shift 49
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	.  error
+
+	ty_def  goto 50
+	term  goto 51
+	proof  goto 52
+
+
+state 95
+	proof : FORALL LPAREN LIDENT COLON kind_and_role . RPAREN proof  (35)
+
+	RPAREN  shift 101
+	.  error
+
+
+state 96
+	term : LAMBDA LPAREN LIDENT COLON ty_def RPAREN . ARROW term  (16)
+
+	ARROW  shift 102
+	.  error
+
+
+state 97
+	kind : LPAREN . kind RPAREN  (3)
+	kind_and_role : LPAREN . kind RPAREN SLASH role  (4)
+	ty_def : LPAREN . ARROW RPAREN  (9)
+	ty_def : LPAREN . TILDE kind RPAREN  (10)
+	ty_def : LPAREN . ty_def RPAREN  (14)
+
+	STAR  shift 7
+	ARROW  shift 36
+	LPAREN  shift 97
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	TILDE  shift 37
+	.  error
+
+	kind  goto 33
+	kind_and_role  goto 10
+	ty_def  goto 38
+
+
+state 98
+	term : BLAMBDA LPAREN LIDENT COLON kind_and_role RPAREN . ARROW term  (18)
+
+	ARROW  shift 103
+	.  error
+
+
+state 99
+	term : BLAMBDA LPAREN LIDENT COLON ty_def TILDE . ty_def ARROW term  (22)
+
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 104
+
+
+state 100
+	term : CASE LPAREN ty_def COMMA term RPAREN . branches  (21)
+
+	LBRACKET  shift 105
+	.  error
+
+	branches  goto 106
+
+
+state 101
+	proof : FORALL LPAREN LIDENT COLON kind_and_role RPAREN . proof  (35)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	.  error
+
+	proof  goto 107
+
+
+state 102
+	term : LAMBDA LPAREN LIDENT COLON ty_def RPAREN ARROW . term  (16)
+
+	LPAREN  shift 19
+	LIDENT  shift 20
+	UIDENT  shift 21
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	.  error
+
+	term  goto 108
+
+
+state 103
+	term : BLAMBDA LPAREN LIDENT COLON kind_and_role RPAREN ARROW . term  (18)
+
+	LPAREN  shift 19
+	LIDENT  shift 20
+	UIDENT  shift 21
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	.  error
+
+	term  goto 109
+
+
+state 104
+	ty_def : ty_def . ty_def  (12)
+	term : BLAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def . ARROW term  (22)
+
+	ARROW  shift 110
+	LPAREN  shift 14
+	LIDENT  shift 15
+	UIDENT  shift 16
+	FORALL  shift 17
+	.  error
+
+	ty_def  goto 40
+
+
+state 105
+	branches : LBRACKET . bs RBRACKET  (26)
+	bs : .  (27)
+
+	.  reduce 27
+
+	bs  goto 111
+
+
+state 106
+	term : CASE LPAREN ty_def COMMA term RPAREN branches .  (21)
+
+	.  reduce 21
+
+
+107: shift/reduce conflict (shift 26, reduce 35) on LIDENT
+107: shift/reduce conflict (shift 27, reduce 35) on FORALL
+107: shift/reduce conflict (shift 57, reduce 35) on SEMI
+107: shift/reduce conflict (shift 28, reduce 35) on LTRI
+107: shift/reduce conflict (shift 29, reduce 35) on SYM
+107: shift/reduce conflict (shift 30, reduce 35) on NTH
+107: shift/reduce conflict (shift 58, reduce 35) on AT
+state 107
+	proof : proof . SEMI proof  (32)
+	proof : proof . proof  (33)
+	proof : FORALL LPAREN LIDENT COLON kind_and_role RPAREN proof .  (35)
+	proof : proof . AT ty_def  (36)
+
+	LIDENT  shift 26
+	FORALL  shift 27
+	SEMI  shift 57
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	AT  shift 58
+	$end  reduce 35
+	LPAREN  reduce 35
+	RPAREN  reduce 35
+	UIDENT  reduce 35
+	LAMBDA  reduce 35
+	BLAMBDA  reduce 35
+	CASE  reduce 35
+	BARROW  reduce 35
+	RBRACKET  reduce 35
+
+	proof  goto 59
+
+
+108: shift/reduce conflict (shift 45, reduce 16) on LPAREN
+108: shift/reduce conflict (shift 46, reduce 16) on LIDENT
+108: shift/reduce conflict (shift 47, reduce 16) on UIDENT
+108: shift/reduce conflict (shift 48, reduce 16) on FORALL
+108: shift/reduce conflict (shift 22, reduce 16) on LAMBDA
+108: shift/reduce conflict (shift 23, reduce 16) on BLAMBDA
+108: shift/reduce conflict (shift 24, reduce 16) on CASE
+108: shift/reduce conflict (shift 49, reduce 16) on BARROW
+108: shift/reduce conflict (shift 28, reduce 16) on LTRI
+108: shift/reduce conflict (shift 29, reduce 16) on SYM
+108: shift/reduce conflict (shift 30, reduce 16) on NTH
+state 108
+	term : LAMBDA LPAREN LIDENT COLON ty_def RPAREN ARROW term .  (16)
+	term : term . term  (17)
+	term : term . ty_def  (19)
+	term : term . proof  (23)
+	term : term . BARROW proof  (24)
+
+	LPAREN  shift 45
+	LIDENT  shift 46
+	UIDENT  shift 47
+	FORALL  shift 48
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	BARROW  shift 49
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	$end  reduce 16
+	RPAREN  reduce 16
+	SEMI  reduce 16
+	RBRACKET  reduce 16
+
+	ty_def  goto 50
+	term  goto 51
+	proof  goto 52
+
+
+109: shift/reduce conflict (shift 45, reduce 18) on LPAREN
+109: shift/reduce conflict (shift 46, reduce 18) on LIDENT
+109: shift/reduce conflict (shift 47, reduce 18) on UIDENT
+109: shift/reduce conflict (shift 48, reduce 18) on FORALL
+109: shift/reduce conflict (shift 22, reduce 18) on LAMBDA
+109: shift/reduce conflict (shift 23, reduce 18) on BLAMBDA
+109: shift/reduce conflict (shift 24, reduce 18) on CASE
+109: shift/reduce conflict (shift 49, reduce 18) on BARROW
+109: shift/reduce conflict (shift 28, reduce 18) on LTRI
+109: shift/reduce conflict (shift 29, reduce 18) on SYM
+109: shift/reduce conflict (shift 30, reduce 18) on NTH
+state 109
+	term : term . term  (17)
+	term : BLAMBDA LPAREN LIDENT COLON kind_and_role RPAREN ARROW term .  (18)
+	term : term . ty_def  (19)
+	term : term . proof  (23)
+	term : term . BARROW proof  (24)
+
+	LPAREN  shift 45
+	LIDENT  shift 46
+	UIDENT  shift 47
+	FORALL  shift 48
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	BARROW  shift 49
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	$end  reduce 18
+	RPAREN  reduce 18
+	SEMI  reduce 18
+	RBRACKET  reduce 18
+
+	ty_def  goto 50
+	term  goto 51
+	proof  goto 52
+
+
+state 110
+	term : BLAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW . term  (22)
+
+	LPAREN  shift 19
+	LIDENT  shift 20
+	UIDENT  shift 21
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	.  error
+
+	term  goto 112
+
+
+state 111
+	branches : LBRACKET bs . RBRACKET  (26)
+	bs : bs . SEMI UIDENT ARROW term  (28)
+
+	SEMI  shift 113
+	RBRACKET  shift 114
+	.  error
+
+
+112: shift/reduce conflict (shift 45, reduce 22) on LPAREN
+112: shift/reduce conflict (shift 46, reduce 22) on LIDENT
+112: shift/reduce conflict (shift 47, reduce 22) on UIDENT
+112: shift/reduce conflict (shift 48, reduce 22) on FORALL
+112: shift/reduce conflict (shift 22, reduce 22) on LAMBDA
+112: shift/reduce conflict (shift 23, reduce 22) on BLAMBDA
+112: shift/reduce conflict (shift 24, reduce 22) on CASE
+112: shift/reduce conflict (shift 49, reduce 22) on BARROW
+112: shift/reduce conflict (shift 28, reduce 22) on LTRI
+112: shift/reduce conflict (shift 29, reduce 22) on SYM
+112: shift/reduce conflict (shift 30, reduce 22) on NTH
+state 112
+	term : term . term  (17)
+	term : term . ty_def  (19)
+	term : BLAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term .  (22)
+	term : term . proof  (23)
+	term : term . BARROW proof  (24)
+
+	LPAREN  shift 45
+	LIDENT  shift 46
+	UIDENT  shift 47
+	FORALL  shift 48
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	BARROW  shift 49
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	$end  reduce 22
+	RPAREN  reduce 22
+	SEMI  reduce 22
+	RBRACKET  reduce 22
+
+	ty_def  goto 50
+	term  goto 51
+	proof  goto 52
+
+
+state 113
+	bs : bs SEMI . UIDENT ARROW term  (28)
+
+	UIDENT  shift 115
+	.  error
+
+
+state 114
+	branches : LBRACKET bs RBRACKET .  (26)
+
+	.  reduce 26
+
+
+state 115
+	bs : bs SEMI UIDENT . ARROW term  (28)
+
+	ARROW  shift 116
+	.  error
+
+
+state 116
+	bs : bs SEMI UIDENT ARROW . term  (28)
+
+	LPAREN  shift 19
+	LIDENT  shift 20
+	UIDENT  shift 21
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	.  error
+
+	term  goto 117
+
+
+state 117
+	term : term . term  (17)
+	term : term . ty_def  (19)
+	term : term . proof  (23)
+	term : term . BARROW proof  (24)
+	bs : bs SEMI UIDENT ARROW term .  (28)
+
+	LPAREN  shift 45
+	LIDENT  shift 46
+	UIDENT  shift 47
+	FORALL  shift 48
+	LAMBDA  shift 22
+	BLAMBDA  shift 23
+	CASE  shift 24
+	BARROW  shift 49
+	LTRI  shift 28
+	SYM  shift 29
+	NTH  shift 30
+	SEMI  reduce 28
+	RBRACKET  reduce 28
+
+	ty_def  goto 50
+	term  goto 51
+	proof  goto 52
+
+
+State 40 contains 4 shift/reduce conflicts.
+State 46 contains 30 reduce/reduce conflicts.
+State 47 contains 15 reduce/reduce conflicts.
+State 50 contains 4 shift/reduce conflicts.
+State 51 contains 11 shift/reduce conflicts.
+State 52 contains 6 shift/reduce conflicts.
+State 55 contains 7 shift/reduce conflicts.
+State 59 contains 7 shift/reduce conflicts.
+State 74 contains 5 reduce/reduce conflicts.
+State 75 contains 6 shift/reduce conflicts.
+State 78 contains 7 shift/reduce conflicts.
+State 79 contains 7 shift/reduce conflicts.
+State 80 contains 4 shift/reduce conflicts.
+State 89 contains 4 shift/reduce conflicts.
+State 107 contains 7 shift/reduce conflicts.
+State 108 contains 11 shift/reduce conflicts.
+State 109 contains 11 shift/reduce conflicts.
+State 112 contains 11 shift/reduce conflicts.
+
+
+34 terminals, 10 nonterminals
+42 grammar rules, 118 states

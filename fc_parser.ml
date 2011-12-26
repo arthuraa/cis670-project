@@ -5,13 +5,15 @@ open Camlp4.PreCast
 
 module MGram = MakeGram(Lexer) 
 
-let kind_entry = MGram.Entry.mk "kind" 
-let role_entry = MGram.Entry.mk "role"
-let kind_and_role_entry = MGram.Entry.mk "kind_and_role"
+let mk = MGram.Entry.mk 
+let kind_entry = mk "kind" 
+let role_entry = mk "role"
+let kind_and_role_entry = mk "kind_and_role"
 
-let watch ()= MGram.Entry.print Format.std_formatter;;
+let dbg ()= MGram.Entry.print Format.std_formatter;;
+let clear = MGram.Entry.clear 
+
 let _ = 
-  let clear = MGram.Entry.clear in 
   clear kind_entry; 
   clear role_entry; 
   clear kind_and_role_entry; 
@@ -31,8 +33,9 @@ let _ =
       ]; 
     kind_and_role_entry :
       [ [
-        x = "*/"; r = role_entry -> KR(Star,r);
-      | x = SELF ; "->" kind_entry; "/"; c = role_entry -> KR(x,c)
+        "("; x = SELF ; "->" ; k= kind_entry; ")"; 
+         "/"; c = role_entry -> KR(KArrow(x,k),c) 
+      |  x = "*/"; r = role_entry -> KR(Star,r);
       | "("; x = SELF ;")" -> x 
       ] ] ;
   END 
@@ -40,14 +43,28 @@ let _ =
 
 let (|-) f g = fun x -> x |> f |> g 
 
-let kind_entry_of_string  = 
-  Stream.of_string |-  MGram.parse kind_entry (Loc.mk "<string>")
-let role_entry_of_string  = 
-  Stream.of_string |- MGram.parse role_entry (Loc.mk "<string>")
+let parser_of_string entry = 
+  let p = 
+    Stream.of_string 
+    |- MGram.parse entry (Loc.mk "<string>") in 
+  fun str -> 
+    try let v = p str in v 
+    with 
+        MGram.Loc.Exc_located(t,exn) -> begin
+          MGram.Loc.print Format.std_formatter t ;
+          print_newline ();
+          raise exn 
+        end 
+      
+
+
+let kind_entry_of_string  = parser_of_string kind_entry 
+let role_entry_of_string  = parser_of_string role_entry 
 let kind_and_role_entry_of_string = 
-  Stream.of_string |- MGram.parse kind_and_role_entry (Loc.mk "<string>")
+  parser_of_string kind_and_role_entry 
 
 
+let _ = 
 let xs = 
     ( kind_entry_of_string "*" , 
       kind_entry_of_string " * / C -> * / C -> *",
