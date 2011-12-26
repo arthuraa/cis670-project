@@ -1,5 +1,6 @@
 *~
 _build
+_build/*
 build/META
 *.byte
 *.native
