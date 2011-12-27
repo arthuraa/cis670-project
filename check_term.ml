@@ -167,8 +167,12 @@ let rec type_check (cxt : context)
         with
             Not_found -> None
     )
-    | FCLam (v, ty, term') ->
-      (type_check ((v, BTermVar ty) :: cxt) term')
+    | FCLam (v, ty, term') -> (
+      try
+        let Some ty' = type_check ((v, BTermVar ty) :: cxt) term' in
+        Some (mk_arrow_ty ty ty')
+      with _ -> None
+    )
     | FCApp (t1, t2) -> (
       try
         let Some (TyApp ((TyApp ((TyConst TArrow), ty1)), ty2)) = type_check cxt t1 in
