@@ -12,6 +12,7 @@
 %token DATA WHERE
 %token NTH SYM NEWTYPE
 %token TYPE FAMILY INSTANCE
+%token LET 
 
 %token <string>LIDENT 
 %token <string>UIDENT 
@@ -100,7 +101,17 @@ ty_dec:  data_type_head clauses SEMI {
   let data_ctors = $2 in 
   List.iter (fun c -> cxt := c :: !cxt ) data_ctors
 }
-    | NEWTYPE UIDENT EQ UIDENT  ty_def  SEMI {}
+    | NEWTYPE UIDENT EQ UIDENT  ty_def  SEMI {
+      let name = $2 in 
+      let ty1 = TyConst (TFunction name) in 
+      let ty2 = $5 in 
+      begin
+        Hashtbl.add new_type_tbl name true;
+        cxt:= ("axiom"^name,
+               BCoer([],TyEq(ty1,ty2),Type)) :: !cxt ;
+        
+      end 
+    }
 
     | TYPE FAMILY UIDENT ty_kr_list SEMI {
       begin
@@ -111,16 +122,17 @@ ty_dec:  data_type_head clauses SEMI {
       end 
     }
 
-    | TYPE INSTANCE ty_kr_list UIDENT type_list EQ ty_def SEMI {
-      let name = $4 in 
-      let tys = $5 in 
-      let type_cxt = $3 in 
-      let ty2 = $7 in 
+    | TYPE INSTANCE LBRACKET ty_kr_list RBRACKET UIDENT 
+        type_list EQ ty_def SEMI {
+      let name = $6 in 
+      let tys = $7 in 
+      let type_cxt = $4 in 
+      let ty2 = $9 in 
       try 
         let count_ref = Hashtbl.find function_tbl name in 
         let ty = TyConst (TFunction name) in 
         let ty1 = List.fold_left (fun x y -> TyApp(x,y)) ty tys in  
-        cxt := (name ^ (string_of_int !count_ref), 
+        cxt := ( "axiom" ^ name ^ (string_of_int !count_ref) , 
                 BCoer(type_cxt, TyEq (ty1,ty2),Code)) :: !cxt ;
         incr count_ref 
       with Not_found 
@@ -212,26 +224,30 @@ ty_def: LIDENT { TyVar $1}
     | LPAREN ty_def TILDE kind ty_def RPAREN FARROW ty_def
         {TyApp(TyApp(TyApp(TyConst(TEquality $4),$2),$5),$8)}
     | UIDENT 
-        { try 
-            let _ = Hashtbl.find datatype_tbl $1 in 
-            TyConst (Datatype $1)
+        { let name = $1 in 
+          try 
+            let _ = Hashtbl.find datatype_tbl name in 
+            TyConst (Datatype name)
           with Not_found -> 
             (try 
-              let _ = Hashtbl.find function_tbl $1 in 
-              TyConst (TFunction $1)
+              let _ = Hashtbl.find function_tbl name in 
+              TyConst (TFunction name)
             with Not_found -> 
-              (* TyConst (Datatype $1) *)
-              Parsing.(
-              let start_pos = rhs_start_pos 1 in
-              let end_pos = rhs_end_pos 1 in
-              let err_msg = sprintf
-                "%d.%d --- %d.%d: undefined type construtor %s"
-                start_pos.pos_lnum (start_pos.pos_cnum -start_pos.pos_bol)
-                end_pos.pos_lnum (end_pos.pos_cnum - end_pos.pos_bol)
-                $1 in
-              prerr_endline err_msg ;
-              raise Not_found
-              )
+              try 
+                let _ = Hashtbl.find new_type_tbl name in 
+                TyConst (TFunction name)
+              with Not_found -> 
+                (Parsing.(
+                  let start_pos = rhs_start_pos 1 in
+                  let end_pos = rhs_end_pos 1 in
+                  let err_msg = sprintf
+                    "%d.%d --- %d.%d: undefined type construtor %s"
+                    start_pos.pos_lnum (start_pos.pos_cnum -start_pos.pos_bol)
+                    end_pos.pos_lnum (end_pos.pos_cnum - end_pos.pos_bol)
+                    name in
+                  prerr_endline err_msg ;
+                  raise Not_found
+                 ))
             )
         }
 
@@ -272,7 +288,13 @@ term: LIDENT {FCVar $1}
 
     | LPAREN term RPAREN
         {$2}
-
+    | LET LIDENT EQ term /* Just for debugging purpuose */
+        {
+          let name = $2 in 
+          let term = $4 in 
+          Hashtbl.add term_tbl name term ;
+          term
+        }
  
 ;
 

@@ -47,11 +47,15 @@ TYPE INSTANCE F Nat = Bool
 ; 
 
 
-TYPE INSTANCE (a:*/C) F (Maybe a) = (Tuple a)
+TYPE INSTANCE { (a:*/C) } F (Maybe a) = (Tuple a)
 ;
 
-\ x: (List Nat) -> CASE (Bool,x) {
+NEWTYPE Age = MkAge Nat ; 
+
+LET a = \ x: (List Nat) -> CASE (Bool,x) {
   Nil => True ;
   Cons => \ y:Nat -> ( \ xs : (List Nat) -> False );
 } ;
+
+
 

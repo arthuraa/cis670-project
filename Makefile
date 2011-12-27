@@ -23,3 +23,5 @@ prj:
 	ocamlbuild prj.cma
 
 all:  parse prj
+clean: 
+	ocamlbuild -clean

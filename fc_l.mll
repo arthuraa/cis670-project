@@ -24,6 +24,7 @@
         "TYPE",TYPE;
         "FAMILY",FAMILY;
         "INSTANCE",INSTANCE;
+        "LET",LET;
       ]
   let first = ref true
 }
@@ -121,14 +122,17 @@ and comment = parse
        Lexing will close it???
     *)
       parser_of_buf entry lexbuf 
-    
+
+  let input_f = parser_of_file input     
+  let input_p = parser_of_entry input 
   let kind_p = parser_of_entry kind 
   let kind_and_role_p = parser_of_entry kind_and_role 
-  let input_f = parser_of_file input 
-  let input_p = parser_of_entry input 
   let ty_def_p = parser_of_entry ty_def 
+  let term_p = parser_of_entry term 
+  let proof_p = parser_of_entry proof 
+  let ty_dec_p = parser_of_entry ty_dec
   let clause_p = parser_of_entry clause
-
+   
   let test_ty () = 
     List.map ty_def_p 
       ["((a -> (LIST a)) -> (LIST a) )" ;
@@ -158,6 +162,7 @@ and comment = parse
       if Filename.check_suffix file ".ml" then
         let file_name = (Filename.concat dir file ) in 
         prerr_endline ("check file: " ^ file_name);
+        Cxt.clear ();
         input_f file_name )
       test_files
   let rec tokens str = 

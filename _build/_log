@@ -22,9 +22,7 @@ ocamlfind ocamlc -c -o cxt.cmo cxt.ml # cached
 # Target: fc_p.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:fc_p.cmo, file:fc_p.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -o fc_p.cmo fc_p.ml # cached
 # Target: check_term.ml.depends, tags: { extension:ml, file:check_term.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -modules check_term.ml > check_term.ml.depends # cached
-# Target: check_term.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:check_term.cmo, file:check_term.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -o check_term.cmo check_term.ml # cached
+ocamlfind ocamldep -modules check_term.ml > check_term.ml.depends
 # Target: fc_l.mli.depends, tags: { extension:mli, file:fc_l.mli, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -modules fc_l.mli > fc_l.mli.depends # cached
 # Target: fc_l.cmi, tags: { byte, compile, extension:mli, file:fc_l.mli, interf, ocaml, quiet, traverse }
@@ -36,9 +34,140 @@ ocamlfind ocamldep -modules fc_l.ml > fc_l.ml.depends # cached
 # Target: fc_l.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:fc_l.cmo, file:fc_l.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -o fc_l.cmo fc_l.ml # cached
 # Target: test.ml.depends, tags: { extension:ml, file:test.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -modules test.ml > test.ml.depends # cached
+ocamlfind ocamldep -modules test.ml > test.ml.depends
+# Target: check_term.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:check_term.cmo, file:check_term.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o check_term.cmo check_term.ml
++ ocamlfind ocamlc -c -o check_term.cmo check_term.ml
+File "check_term.ml", line 191, characters 24-27:
+Warning 26: unused variable r''.
+File "check_term.ml", line 191, characters 20-23:
+Warning 26: unused variable k''.
+File "check_term.ml", line 8, characters 10-29:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+(BDataCon (_, _)|BTermVar _|BCoer (_, _, _)|BTConst _)
+File "check_term.ml", line 22, characters 11-20:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+(BDataCon (_, _)|BTermVar _|BCoer (_, _, _)|BTVar _)
+File "check_term.ml", line 30, characters 10-48:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 32, characters 10-29:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 42, characters 11-30:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 66, characters 12-46:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+(BDataCon (_, _)|BTermVar _|BTConst _|BTVar _)
+File "check_term.ml", line 68, characters 12-27:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 82, characters 12-19:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 88, characters 12-29:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 101, characters 12-59:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 103, characters 12-43:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 114, characters 12-36:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 123, characters 24-33:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+(BDataCon (_, _)|BTermVar _|BCoer (_, _, _)|BTVar _)
+File "check_term.ml", line 139, characters 12-39:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 147, characters 12-130:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 151, characters 14-22:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 165, characters 14-26:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+(BDataCon (_, _)|BCoer (_, _, _)|BTConst _|BTVar _)
+File "check_term.ml", line 174, characters 12-63:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 175, characters 12-20:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 183, characters 13-21:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 189, characters 10-44:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 191, characters 10-29:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 197, characters 13-33:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+(BTermVar _|BCoer (_, _, _)|BTConst _|BTVar _)
+File "check_term.ml", line 205, characters 13-21:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 207, characters 13-36:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+(TyForall (_, _, _)|TyApp (_, _)|TyVar _)
+File "check_term.ml", line 212, characters 15-24:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 229, characters 13-21:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 248, characters 13-186:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 254, characters 13-31:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 265, characters 12-23:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
+File "check_term.ml", line 266, characters 12-50:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a value that is not matched:
+None
 # Target: test.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:test.cmo, file:test.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -o test.cmo test.ml # cached
+ocamlfind ocamlc -c -o test.cmo test.ml
 # Target: prj.cma, tags: { byte, extension:cma, file:prj.cma, library, link, ocaml, quiet, traverse }
 ocamlfind ocamlc -a fc_syntax.cmo util.cmo cxt.cmo fc_p.cmo check_term.cmo fc_l.cmo test.cmo -o prj.cma
 # Compilation successful.
