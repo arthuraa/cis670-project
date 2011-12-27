@@ -1,6 +1,8 @@
 open Fc_syntax
 open Util
 
+let pr = prerr_endline 
+ 
 let rec kind_check (cxt : context) (ty : fc_type)
     (r : role ): kind_and_role option = match ty with
   |TyVar x ->
@@ -9,9 +11,14 @@ let rec kind_check (cxt : context) (ty : fc_type)
       in
       if
         check_cxt cxt && sub_role r1 r then Some (KR (k,r))
-      else None
+      else 
+        (pr "error in branch TyVar in function kind_check"; 
+         None)
+      
     with
-      |_ -> None )
+      |_ -> 
+        (pr "error in branch TyVar in function kind_check" ; None )
+    )
   |TyConst TArrow ->
     Some (KR(arrow_kind,r))
   |TyConst (TEquality k)->
@@ -22,8 +29,12 @@ let rec kind_check (cxt : context) (ty : fc_type)
        let BTConst k = List.assoc s cxt in
        if check_cxt cxt then
          Some (KR (k,r))
-       else None
-     with |_ -> None
+       else 
+         (pr "error in branch TyConst in function kind_check"; 
+         None)
+     with |_ -> 
+       (pr "error in branch TyConst in function kind_check";
+        None)
     )
   |TyApp (a,b) ->
     (try
@@ -34,8 +45,13 @@ let rec kind_check (cxt : context) (ty : fc_type)
       if r = r1  &&
         k1 = k1' then
         Some (KR(k2,r))
-      else None
-     with | _ -> None
+      else 
+        (pr "error in branch TyApp in function kind_check";
+         None
+        )
+     with | _ -> 
+       (pr "error in branch TyApp in function kind_check "; 
+       None)
     )
   |TyForall (a,kr,ty) ->
     (try
@@ -43,8 +59,11 @@ let rec kind_check (cxt : context) (ty : fc_type)
            = kind_check ((a,BTVar kr ):: cxt ) ty r in
        if r = r1 then
          Some (KR(Star,r))
-       else None
-     with | _ -> None
+       else (pr "error in branch TyForall in function kind_check";
+             None)
+     with | _ -> 
+       (pr "error in branch TyForall in function kind_check ";
+       None)
     )
 
 
@@ -73,28 +92,37 @@ let rec proof_check
                 (type_subst_cxt delta types ty2) ,
                 (KR (k,r)))
         else
-          None
+          (pr "error in branch CPAssump in function proof_check "; 
+          None)
       with
-        |_ -> None
+        |_ -> 
+          (pr "error in branch CPAssump in function proof_check";
+           None)
     )
     | CPRefl ty -> (
       try
         let Some kr = kind_check cxt ty r in
         Some (ty,ty, kr)
-      with _ -> None
+      with _ -> 
+        (pr "error in branch CPRefl in function proof_check";
+         None)
     )
     |CPSym proof -> (
       try
         let Some (ty1,ty2,kr)=  proof_check cxt proof r in
         Some (ty2,ty1,kr)
-      with _ -> None
+      with _ -> 
+        (pr "error in branch CPSym in function proof_check";
+         None)
     )
     |CPTrans (a,b) -> (
       match proof_check cxt a r , proof_check cxt b r with
         | Some (ty1,ty2,kr), Some (ty2',ty3,kr') when
             ty2 = ty2' && kr = kr' ->
           Some (ty1,ty3,kr)
-        | _ -> None
+        | _ -> 
+          (pr "error in branch CPTrans in function proof_check";
+           None)
     )
     |CPApp (pf,pa) -> (
       try
@@ -106,8 +134,12 @@ let rec proof_check
         && r = r' (* verbose check *)
         then
           Some ((ty1 |$ ty1'), (ty2 |$ ty2'), KR(k2',r'))
-        else None
-      with _ -> None
+        else 
+          (pr "error in branch CPApp in function proof_check ";
+          None)
+      with _ -> 
+        (pr "error in branch CPApp in function proof_check";
+         None)
     )
     |CPNth (n,pf) -> (
       try
@@ -127,11 +159,19 @@ let rec proof_check
                       Some
                         (List.nth lst1 n,
                          List.nth lst2 n,KR(k',r))
-                    else None
-                |_  -> None
+                    else 
+                      (pr "error in branch CPNth in function proof_check";
+                       None)
+                |_  -> 
+                  (pr "error in branch CPNth in function proof_check";
+                   None)
               )
-            else None )
-      with _ -> None
+            else 
+              (pr "error in branch CPNth in function proof_check";
+              None))
+      with _ -> 
+        (pr "error in branch CPNth in function proof_check";
+         None)
     )
 
     |CPForall (a, (KR(k',r') as kr) ,pf) -> (
@@ -139,7 +179,10 @@ let rec proof_check
         let Some (ty1,ty2, KR (Star,_))= proof_check ((a, BTVar kr) ::cxt) pf  r in
         Some (TyForall (a, kr,ty1), TyForall (a,kr,ty2),
               kr)
-      with _ -> None
+      with _ -> 
+        (pr "error in branch CPForall in function proof_check";
+         None
+        )
     )
 
     |CPInst (pf,ty) -> (
@@ -153,9 +196,16 @@ let rec proof_check
           if kr1 = k1' then
             Some (type_subst a1 ty1' ty,
                   type_subst a2 ty2' ty, KR(Star,r))
-          else None
-        else None
-      with _ -> None
+          else 
+            (pr "error in branch CPInst in function proof_check";
+            None)
+        else 
+          (pr "error in branch CPInst in function proof_check ";
+           None)
+      with _ -> 
+        (pr "error in branch CPInst in function proof_check";
+         None
+        )
     )
 
 let rec type_check (cxt : context)
@@ -165,13 +215,17 @@ let rec type_check (cxt : context)
           let BTermVar ty'= List.assoc v cxt in
           Some ty'
         with
-            Not_found -> None
+            Not_found -> 
+              (pr "error in branch FCVar in function type_check";
+               None)
     )
     | FCLam (v, ty, term') -> (
       try
         let Some ty' = type_check ((v, BTermVar ty) :: cxt) term' in
         Some (mk_arrow_ty ty ty')
-      with _ -> None
+      with _ -> 
+        (pr "error in branch FCLam in function type_check";
+         None)
     )
     | FCApp (t1, t2) -> (
       try
@@ -179,29 +233,41 @@ let rec type_check (cxt : context)
         let Some ty3 = type_check cxt t2 in
         if ty1 = ty3 then
           Some ty2
-        else None
-      with _ -> None
+        else 
+          (pr "error in branch FCApp in function type_check";
+           None)
+      with _ -> 
+        (pr "error in branch FCApp in function type_check"; 
+         None)
     )
     | FCTLam (a, kr, term') ->
       (try
          let Some ty1 =
            type_check ((a,BTVar kr)::cxt) term'
          in Some (TyForall (a,kr,ty1))
-       with _ ->None
+       with _ ->
+         (pr "error in branch FCTLam in function type_check ";
+         None)
       )
     | FCTApp (term', ty) ->(
-      let Some (TyForall (a',KR(k',r'),ty')) =
-         type_check cxt term' in
-      let Some (KR (k'',r'')) =
-        kind_check cxt ty r' in
-      Some (type_subst a' ty' ty)
+      try 
+        let Some (TyForall (a',KR(k',r'),ty')) =
+          type_check cxt term' in
+        let Some (KR (k'',r'')) =
+          kind_check cxt ty r' in
+        Some (type_subst a' ty' ty)
+      with _ -> (
+        pr "error in branch FCTApp in function type_check ";
+        None)
      )
     | FCDatacon s ->
       (try
          let BDataCon (ty_cxt,ty) =
            List.assoc s cxt in
          Some (datacon_type ty_cxt ty)
-       with _ -> None
+       with _ -> 
+         (pr "error in branch FCDatacon in function type_check";
+          None)
       )
     |FCCase (ty,term',branches) ->
        (try
@@ -226,8 +292,11 @@ let rec type_check (cxt : context)
            if List.for_all (fun (k,_) -> List.mem_assoc k branches) consts
              && List.for_all check_branch branches
            then Some ty
-           else None
-       with _ -> None)
+           else 
+             (pr "error in branch FCCase in function type_check";
+             None)
+       with _ -> 
+         (pr "error in branch FCCase in function type_check"; None))
     | FCPLam (s,(TyEq (ty1,ty2) as eq_ty),term') ->
       (try
          let Some ty' =
@@ -243,8 +312,12 @@ let rec type_check (cxt : context)
              |Some (KR (k1,_)), Some (KR (k2,_)) when k1 = k2 ->
                Some ((eq_ty_of_kind k1)
                         |$ ty1 |$ ty2 |$ ty')
-             |_ -> None
-       with _ -> None
+             |_ -> 
+               (pr "error in branch FCPLam in function type_check";
+                None)
+       with _ -> 
+         (pr "error in branch FCPLam in function type_check";
+         None)
       )
     | FCPApp (term', proof) -> (
       try
@@ -261,8 +334,10 @@ let rec type_check (cxt : context)
          then
            Some (sigma)
          else
-           None
-      with _ -> None
+           (pr "error in branch FCPApp in function type_check";
+            None)
+      with _ -> 
+        (pr "error in branch FCPApp in function type_check";None)
     )
     | FCCoer (term',proof) -> (
       try
@@ -271,7 +346,9 @@ let rec type_check (cxt : context)
 
         if sigma1' = sigma1 then
           Some sigma2'
-        else None
-      with _ -> None
+        else 
+          (pr "error in branch FCCoer in function type_check";None)
+      with _ -> 
+        (pr "error in branch FCCoer in function type_check";None)
     )
 
