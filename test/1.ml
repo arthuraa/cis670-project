@@ -1,7 +1,7 @@
 
 DATA Simple (a:*/T) WHERE {
   Toy :: { (a:*/T) } (Simple a)
-}; 
+};
 
 
 DATA Bool WHERE {
@@ -24,8 +24,8 @@ DATA List (a:*/T) WHERE {
 
 DATA Rep (a:*/C) WHERE {
   Rint :: {(a:*/C)} (a ~ * Nat) => (Rep a)
-  Rlist :: {(a:*/C)} (FORALL b :  */C 
-    ( (a ~ * (List b )) => ((Rep b) -> (Rep a)) ) )            
+  Rlist :: {(a:*/C)} (FORALL b :  */C
+    ( (a ~ * (List b )) => ((Rep b) -> (Rep a)) ) )
 };
 
 
@@ -43,23 +43,23 @@ DATA Maybe (a:*/T) WHERE{
 TYPE FAMILY F (a:*/C)
 ;
 
-TYPE INSTANCE F Nat = Bool 
-; 
+TYPE INSTANCE F Nat = Bool
+;
 
 
 TYPE INSTANCE { (a:*/C) } F (Maybe a) = (Tuple a)
 ;
 
-NEWTYPE Age = MkAge Nat ; 
+NEWTYPE Age = MkAge Nat ;
 
 
 
 DATA Unit WHERE {
-  U :: Unit 
+  U :: Unit
 }
 ;
 
-LET mono_id : (Unit -> Unit) = \ x : Unit ->  x 
+LET mono_id : (Unit -> Unit) = \ x : Unit ->  x
 ;
 
 LET poly_id = \ a : */T -> (\ x : a -> x )
@@ -73,4 +73,16 @@ LET is_empty = \ x: (List Nat) -> CASE (Bool,x) {
 
 
 LET coer_age_nat = \x : (Age) -> (x -> MkAge);
+
+LET coer_nat_age = \x : (Nat) -> (x -> (SYM MkAge));
+
+LET maybe_inc = \x : (Maybe Nat) -> CASE (Nat, x) {
+  Just => \y : Nat -> (S y);
+  Nothing => Z;
+};
+
+LET maybe_age = \x : (Maybe Age) -> ((\x : (Maybe Nat) -> CASE (Nat, x) {
+  Just => \y : Nat -> (S y);
+  Nothing => Z;
+}) (x -> (<Maybe> MkAge)));
 
