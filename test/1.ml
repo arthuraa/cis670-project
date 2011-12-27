@@ -75,3 +75,5 @@ LET is_empty = \ x: (List Nat) -> CASE (Bool,x) {
 LET coer_age_nat = \x : (Age) -> (x -> MkAge);
 
 LET coer_nat_age = \x : (Nat) -> (x -> (SYM MkAge));
+
+LET mono_id_test = \x : Unit -> (mono_id x) ; 
