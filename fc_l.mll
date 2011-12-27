@@ -164,9 +164,19 @@ and comment = parse
         prerr_endline ("check file: " ^ file_name);
         Cxt.clear ();
         input_f file_name;
-        Hashtbl.fold (fun k term acc  -> 
-          (k, Check_term.type_check !Cxt.cxt term) :: acc 
-        ) Cxt.term_tbl []
+        Hashtbl.fold (fun k (term, some_ty) acc  -> 
+          match some_ty with 
+              None -> 
+                (k, Check_term.type_check !Cxt.cxt term) :: acc 
+            | Some ty  -> 
+              let ty1= Check_term.type_check !Cxt.cxt term in 
+              match ty1 with 
+                  Some ty2 when ty2 = ty -> 
+                    (k, ty1) :: acc 
+                | _ -> 
+                  (prerr_endline ("type does not check for term " ^ k));
+                  (k,ty1) :: acc 
+              )  Cxt.term_tbl []
       else []
     )
       test_files

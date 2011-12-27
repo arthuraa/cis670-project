@@ -266,7 +266,9 @@ let rec type_check (cxt : context)
            List.assoc s cxt in
          Some (datacon_type ty_cxt ty)
        with _ -> 
-         (pr "error in branch FCDatacon in function type_check";
+         (
+           pr s ;
+           pr "error in branch FCDatacon in function type_check";
           None)
       )
     |FCCase (ty,term',branches) ->

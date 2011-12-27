@@ -6,7 +6,7 @@ DATA Simple (a:*/T) WHERE {
 
 DATA Bool WHERE {
   True :: Bool
-  FALSE :: Bool
+  False :: Bool
 }
 ;
 
@@ -53,12 +53,13 @@ TYPE INSTANCE { (a:*/C) } F (Maybe a) = (Tuple a)
 NEWTYPE Age = MkAge Nat ; 
 
 
+
 DATA Unit WHERE {
   U :: Unit 
 }
 ;
 
-LET mono_id = \ x : Unit ->  x 
+LET mono_id : (Unit -> Unit) = \ x : Unit ->  x 
 ;
 
 LET poly_id = \ a : */T -> (\ x : a -> x )
@@ -71,4 +72,5 @@ LET is_empty = \ x: (List Nat) -> CASE (Bool,x) {
 } ;
 
 
+LET coer_age_nat = \x : (Age) -> (x -> MkAge);
 

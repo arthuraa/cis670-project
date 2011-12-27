@@ -105,10 +105,12 @@ ty_dec:  data_type_head clauses SEMI {
       let name = $2 in 
       let ty1 = TyConst (TFunction name) in 
       let ty2 = $5 in 
+      let ctor_name = $4 in 
       begin
         Hashtbl.add new_type_tbl name true;
-        cxt:= ("axiom"^name,
-               BCoer([],TyEq(ty1,ty2),Type)) :: !cxt ;
+        cxt := (name, BTConst Star) :: !cxt ;
+        cxt:= (ctor_name,
+               BCoer([],TyEq(ty1,ty2),Type)) :: !cxt;
         
       end 
     }
@@ -273,7 +275,16 @@ term: LIDENT {FCVar $1}
         {FCTApp($2,$4)}
 
     | UIDENT
-        {FCDatacon $1}
+        {
+          let con_name = $1 in 
+          try 
+            let BDataCon _ = List.assoc con_name !cxt in 
+            FCDatacon con_name 
+          with 
+              Not_found -> 
+                prerr_endline ("undefined data ctor " ^ con_name);
+                raise Not_found
+        }
 
     | CASE LPAREN ty_def COMMA term RPAREN branches 
         {FCCase($3,$5,$7)}
@@ -293,10 +304,18 @@ term: LIDENT {FCVar $1}
         {
           let name = $2 in 
           let term = $4 in 
-          Hashtbl.add term_tbl name term ;
+          Hashtbl.add term_tbl name (term,None) ;
           term
         }
  
+    | LET LIDENT COLON ty_def EQ term 
+        {
+          let name = $2 in 
+          let ty = $4 in 
+          let term = $6 in 
+          Hashtbl.add term_tbl name (term,Some ty);
+          term 
+        }
 ;
 
 branches: LBRACKET bs RBRACKET {List.rev $2}
@@ -304,7 +323,28 @@ bs: /*empty*/  {[]}
     | bs  UIDENT FARROW term SEMI  { Branch( $2,$4 ):: $1  }
 ;
 
-proof: LIDENT { failwith "no implemented"}
+proof: LIDENT {
+  let proof = $1 in 
+  try
+    let BCoer (tys,_,_) = List.assoc proof !cxt  in 
+    let tylist = List.map (fun (x,_) -> TyVar x) tys in 
+    CPAssump (proof, tylist)
+  with Not_found 
+      -> (prerr_endline ("proof" ^ proof ^ "not found");
+            raise Not_found 
+      )
+}
+    | UIDENT {
+  let proof = $1 in 
+  try
+    let BCoer (tys,_,_) = List.assoc proof !cxt  in 
+    let tylist = List.map (fun (x,_) -> TyVar x) tys in 
+    CPAssump (proof, tylist)
+  with Not_found 
+      -> (prerr_endline ("proof" ^ proof ^ "not found");
+            raise Not_found 
+      )
+    }
     | LTRI ty_def RTRI {CPRefl $2}
     | LPAREN SYM proof RPAREN {CPSym $3}
     | LPAREN proof SEMI proof RPAREN {CPTrans($2,$4)}

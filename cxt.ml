@@ -7,7 +7,8 @@ let function_tbl : (string, int ref ) Hashtbl.t= Hashtbl.create 30
 
 let new_type_tbl : (string, bool) Hashtbl.t = Hashtbl.create 30 
 
-let term_tbl : (string, fc_term) Hashtbl.t = Hashtbl.create 30 
+let term_tbl : (string, (fc_term* fc_type option))
+    Hashtbl.t = Hashtbl.create 30 
 
 let cxt : context ref = ref [] 
 
