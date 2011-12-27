@@ -22,76 +22,77 @@
   15         | NEWTYPE UIDENT EQ UIDENT ty_def SEMI
   16         | TYPE FAMILY UIDENT ty_kr_list SEMI
   17         | TYPE INSTANCE ty_kr_list UIDENT type_list EQ ty_def SEMI
+  18         | TYPE INSTANCE UIDENT type_list EQ ty_def SEMI
 
-  18  data_type_head : DATA UIDENT ty_kr_list WHERE
+  19  data_type_head : DATA UIDENT ty_kr_list WHERE
 
-  19  ty_kr_list : ty_kr_list_aux
+  20  ty_kr_list : ty_kr_list_aux
 
-  20  ty_kr_list_aux :
-  21                 | ty_kr_list_aux LPAREN LIDENT COLON kind_and_role RPAREN
+  21  ty_kr_list_aux :
+  22                 | ty_kr_list_aux LPAREN LIDENT COLON kind_and_role RPAREN
 
-  22  type_list : type_list_aux
+  23  type_list : type_list_aux
 
-  23  type_list_aux :
-  24                | type_list_aux ty_def
+  24  type_list_aux :
+  25                | type_list_aux ty_def
 
-  25  tylist : tylist_aux
+  26  tylist : tylist_aux
 
-  26  tylist_aux :
-  27             | tylist LIDENT
+  27  tylist_aux :
+  28             | tylist LIDENT
 
-  28  clauses : LBRACKET clauses_aux RBRACKET
+  29  clauses : LBRACKET clauses_aux RBRACKET
 
-  29  clauses_aux :
-  30              | clauses_aux clause
+  30  clauses_aux :
+  31              | clauses_aux clause
 
-  31  clause : UIDENT DOUBLECOLON LBRACKET ty_kr_list RBRACKET ty_def
-  32         | UIDENT DOUBLECOLON ty_def
+  32  clause : UIDENT DOUBLECOLON LBRACKET ty_kr_list RBRACKET ty_def
+  33         | UIDENT DOUBLECOLON ty_def
 
-  33  ty_def : LIDENT
-  34         | LPAREN ARROW RPAREN
-  35         | LPAREN ty_def ARROW ty_def RPAREN
-  36         | LPAREN TILDE kind RPAREN
-  37         | LPAREN ty_def TILDE kind ty_def RPAREN FARROW ty_def
-  38         | UIDENT
-  39         | LPAREN ty_def ty_def RPAREN
-  40         | FORALL LIDENT COLON kind_and_role ty_def
-  41         | LPAREN ty_def RPAREN
+  34  ty_def : LIDENT
+  35         | LPAREN ARROW RPAREN
+  36         | LPAREN ty_def ARROW ty_def RPAREN
+  37         | LPAREN TILDE kind RPAREN
+  38         | LPAREN ty_def TILDE kind ty_def RPAREN FARROW ty_def
+  39         | UIDENT
+  40         | LPAREN ty_def ty_def RPAREN
+  41         | FORALL LIDENT COLON kind_and_role ty_def
+  42         | LPAREN ty_def RPAREN
 
-  42  term : LIDENT
-  43       | LAMBDA LIDENT COLON ty_def ARROW term
-  44       | LPAREN term term RPAREN
-  45       | LAMBDA LIDENT COLON kind_and_role ARROW term
-  46       | LPAREN term TAPP ty_def RPAREN
-  47       | UIDENT
-  48       | CASE LPAREN ty_def COMMA term RPAREN branches
-  49       | LAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term
-  50       | LPAREN term AT proof RPAREN
-  51       | LPAREN term ARROW proof RPAREN
-  52       | LPAREN term RPAREN
+  43  term : LIDENT
+  44       | LAMBDA LIDENT COLON ty_def ARROW term
+  45       | LPAREN term term RPAREN
+  46       | LAMBDA LIDENT COLON kind_and_role ARROW term
+  47       | LPAREN term TAPP ty_def RPAREN
+  48       | UIDENT
+  49       | CASE LPAREN ty_def COMMA term RPAREN branches
+  50       | LAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term
+  51       | LPAREN term AT proof RPAREN
+  52       | LPAREN term ARROW proof RPAREN
+  53       | LPAREN term RPAREN
 
-  53  branches : LBRACKET bs RBRACKET
+  54  branches : LBRACKET bs RBRACKET
 
-  54  bs :
-  55     | bs UIDENT FARROW term SEMI
+  55  bs :
+  56     | bs UIDENT FARROW term SEMI
 
-  56  proof : LIDENT
-  57        | LTRI ty_def RTRI
-  58        | LPAREN SYM proof RPAREN
-  59        | LPAREN proof SEMI proof RPAREN
-  60        | LPAREN proof proof RPAREN
-  61        | LPAREN NTH INT proof RPAREN
-  62        | FORALL LPAREN LIDENT COLON kind_and_role RPAREN proof
-  63        | LPAREN proof AT ty_def RPAREN
+  57  proof : LIDENT
+  58        | LTRI ty_def RTRI
+  59        | LPAREN SYM proof RPAREN
+  60        | LPAREN proof SEMI proof RPAREN
+  61        | LPAREN proof proof RPAREN
+  62        | LPAREN NTH INT proof RPAREN
+  63        | FORALL LPAREN LIDENT COLON kind_and_role RPAREN proof
+  64        | LPAREN proof AT ty_def RPAREN
 
-  64  %entry% : '\001' input
-  65          | '\002' kind
-  66          | '\003' kind_and_role
-  67          | '\010' ty_def
-  68          | '\005' term
-  69          | '\006' proof
-  70          | '\007' ty_dec
-  71          | '\011' clause
+  65  %entry% : '\001' input
+  66          | '\002' kind
+  67          | '\003' kind_and_role
+  68          | '\010' ty_def
+  69          | '\005' term
+  70          | '\006' proof
+  71          | '\007' ty_dec
+  72          | '\011' clause
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -110,7 +111,7 @@ state 0
 
 
 state 1
-	%entry% : '\001' . input  (64)
+	%entry% : '\001' . input  (65)
 
 	TYPE  shift 10
 	CASE  shift 11
@@ -131,7 +132,7 @@ state 1
 
 
 state 2
-	%entry% : '\002' . kind  (65)
+	%entry% : '\002' . kind  (66)
 
 	STAR  shift 24
 	LPAREN  shift 25
@@ -142,7 +143,7 @@ state 2
 
 
 state 3
-	%entry% : '\003' . kind_and_role  (66)
+	%entry% : '\003' . kind_and_role  (67)
 
 	STAR  shift 28
 	LPAREN  shift 29
@@ -152,7 +153,7 @@ state 3
 
 
 state 4
-	%entry% : '\010' . ty_def  (67)
+	%entry% : '\010' . ty_def  (68)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -164,7 +165,7 @@ state 4
 
 
 state 5
-	%entry% : '\005' . term  (68)
+	%entry% : '\005' . term  (69)
 
 	CASE  shift 11
 	LIDENT  shift 14
@@ -177,7 +178,7 @@ state 5
 
 
 state 6
-	%entry% : '\006' . proof  (69)
+	%entry% : '\006' . proof  (70)
 
 	FORALL  shift 37
 	LIDENT  shift 38
@@ -189,7 +190,7 @@ state 6
 
 
 state 7
-	%entry% : '\007' . ty_dec  (70)
+	%entry% : '\007' . ty_dec  (71)
 
 	TYPE  shift 10
 	DATA  shift 12
@@ -201,7 +202,7 @@ state 7
 
 
 state 8
-	%entry% : '\011' . clause  (71)
+	%entry% : '\011' . clause  (72)
 
 	UIDENT  shift 43
 	.  error
@@ -218,6 +219,7 @@ state 9
 state 10
 	ty_dec : TYPE . FAMILY UIDENT ty_kr_list SEMI  (16)
 	ty_dec : TYPE . INSTANCE ty_kr_list UIDENT type_list EQ ty_def SEMI  (17)
+	ty_dec : TYPE . INSTANCE UIDENT type_list EQ ty_def SEMI  (18)
 
 	FAMILY  shift 45
 	INSTANCE  shift 46
@@ -225,14 +227,14 @@ state 10
 
 
 state 11
-	term : CASE . LPAREN ty_def COMMA term RPAREN branches  (48)
+	term : CASE . LPAREN ty_def COMMA term RPAREN branches  (49)
 
 	LPAREN  shift 47
 	.  error
 
 
 state 12
-	data_type_head : DATA . UIDENT ty_kr_list WHERE  (18)
+	data_type_head : DATA . UIDENT ty_kr_list WHERE  (19)
 
 	UIDENT  shift 48
 	.  error
@@ -246,23 +248,23 @@ state 13
 
 
 state 14
-	term : LIDENT .  (42)
+	term : LIDENT .  (43)
 
-	.  reduce 42
+	.  reduce 43
 
 
 state 15
-	term : UIDENT .  (47)
+	term : UIDENT .  (48)
 
-	.  reduce 47
+	.  reduce 48
 
 
 state 16
-	term : LPAREN . term term RPAREN  (44)
-	term : LPAREN . term TAPP ty_def RPAREN  (46)
-	term : LPAREN . term AT proof RPAREN  (50)
-	term : LPAREN . term ARROW proof RPAREN  (51)
-	term : LPAREN . term RPAREN  (52)
+	term : LPAREN . term term RPAREN  (45)
+	term : LPAREN . term TAPP ty_def RPAREN  (47)
+	term : LPAREN . term AT proof RPAREN  (51)
+	term : LPAREN . term ARROW proof RPAREN  (52)
+	term : LPAREN . term RPAREN  (53)
 
 	CASE  shift 11
 	LIDENT  shift 14
@@ -281,9 +283,9 @@ state 17
 
 
 state 18
-	term : LAMBDA . LIDENT COLON ty_def ARROW term  (43)
-	term : LAMBDA . LIDENT COLON kind_and_role ARROW term  (45)
-	term : LAMBDA . LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term  (49)
+	term : LAMBDA . LIDENT COLON ty_def ARROW term  (44)
+	term : LAMBDA . LIDENT COLON kind_and_role ARROW term  (46)
+	term : LAMBDA . LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term  (50)
 
 	LIDENT  shift 51
 	LPAREN  shift 52
@@ -291,9 +293,9 @@ state 18
 
 
 state 19
-	%entry% : '\001' input .  (64)
+	%entry% : '\001' input .  (65)
 
-	.  reduce 64
+	.  reduce 65
 
 
 state 20
@@ -364,9 +366,9 @@ state 25
 
 
 state 26
-	%entry% : '\002' kind .  (65)
+	%entry% : '\002' kind .  (66)
 
-	.  reduce 65
+	.  reduce 66
 
 
 state 27
@@ -395,37 +397,37 @@ state 29
 
 
 state 30
-	%entry% : '\003' kind_and_role .  (66)
+	%entry% : '\003' kind_and_role .  (67)
 
-	.  reduce 66
+	.  reduce 67
 
 
 state 31
-	ty_def : FORALL . LIDENT COLON kind_and_role ty_def  (40)
+	ty_def : FORALL . LIDENT COLON kind_and_role ty_def  (41)
 
 	LIDENT  shift 62
 	.  error
 
 
 state 32
-	ty_def : LIDENT .  (33)
+	ty_def : LIDENT .  (34)
 
-	.  reduce 33
+	.  reduce 34
 
 
 state 33
-	ty_def : UIDENT .  (38)
+	ty_def : UIDENT .  (39)
 
-	.  reduce 38
+	.  reduce 39
 
 
 state 34
-	ty_def : LPAREN . ARROW RPAREN  (34)
-	ty_def : LPAREN . ty_def ARROW ty_def RPAREN  (35)
-	ty_def : LPAREN . TILDE kind RPAREN  (36)
-	ty_def : LPAREN . ty_def TILDE kind ty_def RPAREN FARROW ty_def  (37)
-	ty_def : LPAREN . ty_def ty_def RPAREN  (39)
-	ty_def : LPAREN . ty_def RPAREN  (41)
+	ty_def : LPAREN . ARROW RPAREN  (35)
+	ty_def : LPAREN . ty_def ARROW ty_def RPAREN  (36)
+	ty_def : LPAREN . TILDE kind RPAREN  (37)
+	ty_def : LPAREN . ty_def TILDE kind ty_def RPAREN FARROW ty_def  (38)
+	ty_def : LPAREN . ty_def ty_def RPAREN  (40)
+	ty_def : LPAREN . ty_def RPAREN  (42)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -439,36 +441,36 @@ state 34
 
 
 state 35
-	%entry% : '\010' ty_def .  (67)
-
-	.  reduce 67
-
-
-state 36
-	%entry% : '\005' term .  (68)
+	%entry% : '\010' ty_def .  (68)
 
 	.  reduce 68
 
 
+state 36
+	%entry% : '\005' term .  (69)
+
+	.  reduce 69
+
+
 state 37
-	proof : FORALL . LPAREN LIDENT COLON kind_and_role RPAREN proof  (62)
+	proof : FORALL . LPAREN LIDENT COLON kind_and_role RPAREN proof  (63)
 
 	LPAREN  shift 66
 	.  error
 
 
 state 38
-	proof : LIDENT .  (56)
+	proof : LIDENT .  (57)
 
-	.  reduce 56
+	.  reduce 57
 
 
 state 39
-	proof : LPAREN . SYM proof RPAREN  (58)
-	proof : LPAREN . proof SEMI proof RPAREN  (59)
-	proof : LPAREN . proof proof RPAREN  (60)
-	proof : LPAREN . NTH INT proof RPAREN  (61)
-	proof : LPAREN . proof AT ty_def RPAREN  (63)
+	proof : LPAREN . SYM proof RPAREN  (59)
+	proof : LPAREN . proof SEMI proof RPAREN  (60)
+	proof : LPAREN . proof proof RPAREN  (61)
+	proof : LPAREN . NTH INT proof RPAREN  (62)
+	proof : LPAREN . proof AT ty_def RPAREN  (64)
 
 	FORALL  shift 37
 	NTH  shift 67
@@ -482,7 +484,7 @@ state 39
 
 
 state 40
-	proof : LTRI . ty_def RTRI  (57)
+	proof : LTRI . ty_def RTRI  (58)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -494,29 +496,29 @@ state 40
 
 
 state 41
-	%entry% : '\006' proof .  (69)
-
-	.  reduce 69
-
-
-state 42
-	%entry% : '\007' ty_dec .  (70)
+	%entry% : '\006' proof .  (70)
 
 	.  reduce 70
 
 
+state 42
+	%entry% : '\007' ty_dec .  (71)
+
+	.  reduce 71
+
+
 state 43
-	clause : UIDENT . DOUBLECOLON LBRACKET ty_kr_list RBRACKET ty_def  (31)
-	clause : UIDENT . DOUBLECOLON ty_def  (32)
+	clause : UIDENT . DOUBLECOLON LBRACKET ty_kr_list RBRACKET ty_def  (32)
+	clause : UIDENT . DOUBLECOLON ty_def  (33)
 
 	DOUBLECOLON  shift 71
 	.  error
 
 
 state 44
-	%entry% : '\011' clause .  (71)
+	%entry% : '\011' clause .  (72)
 
-	.  reduce 71
+	.  reduce 72
 
 
 state 45
@@ -526,18 +528,21 @@ state 45
 	.  error
 
 
+46: shift/reduce conflict (shift 73, reduce 21) on UIDENT
 state 46
 	ty_dec : TYPE INSTANCE . ty_kr_list UIDENT type_list EQ ty_def SEMI  (17)
-	ty_kr_list_aux : .  (20)
+	ty_dec : TYPE INSTANCE . UIDENT type_list EQ ty_def SEMI  (18)
+	ty_kr_list_aux : .  (21)
 
-	.  reduce 20
+	UIDENT  shift 73
+	LPAREN  reduce 21
 
-	ty_kr_list  goto 73
-	ty_kr_list_aux  goto 74
+	ty_kr_list  goto 74
+	ty_kr_list_aux  goto 75
 
 
 state 47
-	term : CASE LPAREN . ty_def COMMA term RPAREN branches  (48)
+	term : CASE LPAREN . ty_def COMMA term RPAREN branches  (49)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -545,59 +550,59 @@ state 47
 	LPAREN  shift 34
 	.  error
 
-	ty_def  goto 75
+	ty_def  goto 76
 
 
 state 48
-	data_type_head : DATA UIDENT . ty_kr_list WHERE  (18)
-	ty_kr_list_aux : .  (20)
+	data_type_head : DATA UIDENT . ty_kr_list WHERE  (19)
+	ty_kr_list_aux : .  (21)
 
-	.  reduce 20
+	.  reduce 21
 
-	ty_kr_list  goto 76
-	ty_kr_list_aux  goto 74
+	ty_kr_list  goto 77
+	ty_kr_list_aux  goto 75
 
 
 state 49
 	ty_dec : NEWTYPE UIDENT . EQ UIDENT ty_def SEMI  (15)
 
-	EQ  shift 77
+	EQ  shift 78
 	.  error
 
 
 state 50
-	term : LPAREN term . term RPAREN  (44)
-	term : LPAREN term . TAPP ty_def RPAREN  (46)
-	term : LPAREN term . AT proof RPAREN  (50)
-	term : LPAREN term . ARROW proof RPAREN  (51)
-	term : LPAREN term . RPAREN  (52)
+	term : LPAREN term . term RPAREN  (45)
+	term : LPAREN term . TAPP ty_def RPAREN  (47)
+	term : LPAREN term . AT proof RPAREN  (51)
+	term : LPAREN term . ARROW proof RPAREN  (52)
+	term : LPAREN term . RPAREN  (53)
 
 	CASE  shift 11
 	LIDENT  shift 14
 	UIDENT  shift 15
-	ARROW  shift 78
+	ARROW  shift 79
 	LPAREN  shift 16
-	RPAREN  shift 79
+	RPAREN  shift 80
 	LAMBDA  shift 18
-	AT  shift 80
-	TAPP  shift 81
+	AT  shift 81
+	TAPP  shift 82
 	.  error
 
-	term  goto 82
+	term  goto 83
 
 
 state 51
-	term : LAMBDA LIDENT . COLON ty_def ARROW term  (43)
-	term : LAMBDA LIDENT . COLON kind_and_role ARROW term  (45)
+	term : LAMBDA LIDENT . COLON ty_def ARROW term  (44)
+	term : LAMBDA LIDENT . COLON kind_and_role ARROW term  (46)
 
-	COLON  shift 83
+	COLON  shift 84
 	.  error
 
 
 state 52
-	term : LAMBDA LPAREN . LIDENT COLON ty_def TILDE ty_def ARROW term  (49)
+	term : LAMBDA LPAREN . LIDENT COLON ty_def TILDE ty_def ARROW term  (50)
 
-	LIDENT  shift 84
+	LIDENT  shift 85
 	.  error
 
 
@@ -610,7 +615,7 @@ state 53
 state 54
 	input_aux : input_aux term . SEMI  (6)
 
-	SEMI  shift 85
+	SEMI  shift 86
 	.  error
 
 
@@ -621,36 +626,36 @@ state 55
 
 
 state 56
-	clauses : LBRACKET . clauses_aux RBRACKET  (28)
-	clauses_aux : .  (29)
+	clauses : LBRACKET . clauses_aux RBRACKET  (29)
+	clauses_aux : .  (30)
 
-	.  reduce 29
+	.  reduce 30
 
-	clauses_aux  goto 86
+	clauses_aux  goto 87
 
 
 state 57
 	ty_dec : data_type_head clauses . SEMI  (14)
 
-	SEMI  shift 87
+	SEMI  shift 88
 	.  error
 
 
 state 58
 	kind_and_role : STAR SLASH . role  (11)
 
-	CODE  shift 88
-	TYPE  shift 89
+	CODE  shift 89
+	TYPE  shift 90
 	.  error
 
-	role  goto 90
+	role  goto 91
 
 
 state 59
 	kind : LPAREN kind . RPAREN  (9)
 	kind_and_role : LPAREN kind . RPAREN SLASH role  (10)
 
-	RPAREN  shift 91
+	RPAREN  shift 92
 	.  error
 
 
@@ -661,76 +666,76 @@ state 60
 	LPAREN  shift 25
 	.  error
 
-	kind  goto 92
+	kind  goto 93
 	kind_and_role  goto 27
 
 
 state 61
 	kind_and_role : LPAREN kind . RPAREN SLASH role  (10)
 
-	RPAREN  shift 93
+	RPAREN  shift 94
 	.  error
 
 
 state 62
-	ty_def : FORALL LIDENT . COLON kind_and_role ty_def  (40)
+	ty_def : FORALL LIDENT . COLON kind_and_role ty_def  (41)
 
-	COLON  shift 94
+	COLON  shift 95
 	.  error
 
 
 state 63
-	ty_def : LPAREN ARROW . RPAREN  (34)
+	ty_def : LPAREN ARROW . RPAREN  (35)
 
-	RPAREN  shift 95
+	RPAREN  shift 96
 	.  error
 
 
 state 64
-	ty_def : LPAREN TILDE . kind RPAREN  (36)
+	ty_def : LPAREN TILDE . kind RPAREN  (37)
 
 	STAR  shift 24
 	LPAREN  shift 25
 	.  error
 
-	kind  goto 96
+	kind  goto 97
 	kind_and_role  goto 27
 
 
 state 65
-	ty_def : LPAREN ty_def . ARROW ty_def RPAREN  (35)
-	ty_def : LPAREN ty_def . TILDE kind ty_def RPAREN FARROW ty_def  (37)
-	ty_def : LPAREN ty_def . ty_def RPAREN  (39)
-	ty_def : LPAREN ty_def . RPAREN  (41)
+	ty_def : LPAREN ty_def . ARROW ty_def RPAREN  (36)
+	ty_def : LPAREN ty_def . TILDE kind ty_def RPAREN FARROW ty_def  (38)
+	ty_def : LPAREN ty_def . ty_def RPAREN  (40)
+	ty_def : LPAREN ty_def . RPAREN  (42)
 
 	FORALL  shift 31
 	LIDENT  shift 32
 	UIDENT  shift 33
-	ARROW  shift 97
+	ARROW  shift 98
 	LPAREN  shift 34
-	RPAREN  shift 98
-	TILDE  shift 99
+	RPAREN  shift 99
+	TILDE  shift 100
 	.  error
 
-	ty_def  goto 100
+	ty_def  goto 101
 
 
 state 66
-	proof : FORALL LPAREN . LIDENT COLON kind_and_role RPAREN proof  (62)
+	proof : FORALL LPAREN . LIDENT COLON kind_and_role RPAREN proof  (63)
 
-	LIDENT  shift 101
+	LIDENT  shift 102
 	.  error
 
 
 state 67
-	proof : LPAREN NTH . INT proof RPAREN  (61)
+	proof : LPAREN NTH . INT proof RPAREN  (62)
 
-	INT  shift 102
+	INT  shift 103
 	.  error
 
 
 state 68
-	proof : LPAREN SYM . proof RPAREN  (58)
+	proof : LPAREN SYM . proof RPAREN  (59)
 
 	FORALL  shift 37
 	LIDENT  shift 38
@@ -738,115 +743,107 @@ state 68
 	LTRI  shift 40
 	.  error
 
-	proof  goto 103
+	proof  goto 104
 
 
 state 69
-	proof : LPAREN proof . SEMI proof RPAREN  (59)
-	proof : LPAREN proof . proof RPAREN  (60)
-	proof : LPAREN proof . AT ty_def RPAREN  (63)
+	proof : LPAREN proof . SEMI proof RPAREN  (60)
+	proof : LPAREN proof . proof RPAREN  (61)
+	proof : LPAREN proof . AT ty_def RPAREN  (64)
 
 	FORALL  shift 37
 	LIDENT  shift 38
 	LPAREN  shift 39
-	SEMI  shift 104
+	SEMI  shift 105
 	LTRI  shift 40
-	AT  shift 105
+	AT  shift 106
 	.  error
 
-	proof  goto 106
+	proof  goto 107
 
 
 state 70
-	proof : LTRI ty_def . RTRI  (57)
+	proof : LTRI ty_def . RTRI  (58)
 
-	RTRI  shift 107
+	RTRI  shift 108
 	.  error
 
 
 state 71
-	clause : UIDENT DOUBLECOLON . LBRACKET ty_kr_list RBRACKET ty_def  (31)
-	clause : UIDENT DOUBLECOLON . ty_def  (32)
+	clause : UIDENT DOUBLECOLON . LBRACKET ty_kr_list RBRACKET ty_def  (32)
+	clause : UIDENT DOUBLECOLON . ty_def  (33)
 
 	FORALL  shift 31
 	LIDENT  shift 32
 	UIDENT  shift 33
 	LPAREN  shift 34
-	LBRACKET  shift 108
+	LBRACKET  shift 109
 	.  error
 
-	ty_def  goto 109
+	ty_def  goto 110
 
 
 state 72
 	ty_dec : TYPE FAMILY UIDENT . ty_kr_list SEMI  (16)
-	ty_kr_list_aux : .  (20)
+	ty_kr_list_aux : .  (21)
 
-	.  reduce 20
+	.  reduce 21
 
-	ty_kr_list  goto 110
-	ty_kr_list_aux  goto 74
+	ty_kr_list  goto 111
+	ty_kr_list_aux  goto 75
 
 
 state 73
-	ty_dec : TYPE INSTANCE ty_kr_list . UIDENT type_list EQ ty_def SEMI  (17)
+	ty_dec : TYPE INSTANCE UIDENT . type_list EQ ty_def SEMI  (18)
+	type_list_aux : .  (24)
 
-	UIDENT  shift 111
-	.  error
+	.  reduce 24
+
+	type_list  goto 112
+	type_list_aux  goto 113
 
 
 state 74
-	ty_kr_list : ty_kr_list_aux .  (19)
-	ty_kr_list_aux : ty_kr_list_aux . LPAREN LIDENT COLON kind_and_role RPAREN  (21)
+	ty_dec : TYPE INSTANCE ty_kr_list . UIDENT type_list EQ ty_def SEMI  (17)
 
-	LPAREN  shift 112
-	WHERE  reduce 19
-	UIDENT  reduce 19
-	SEMI  reduce 19
-	RBRACKET  reduce 19
-
-
-state 75
-	term : CASE LPAREN ty_def . COMMA term RPAREN branches  (48)
-
-	COMMA  shift 113
+	UIDENT  shift 114
 	.  error
 
 
-state 76
-	data_type_head : DATA UIDENT ty_kr_list . WHERE  (18)
+state 75
+	ty_kr_list : ty_kr_list_aux .  (20)
+	ty_kr_list_aux : ty_kr_list_aux . LPAREN LIDENT COLON kind_and_role RPAREN  (22)
 
-	WHERE  shift 114
+	LPAREN  shift 115
+	WHERE  reduce 20
+	UIDENT  reduce 20
+	SEMI  reduce 20
+	RBRACKET  reduce 20
+
+
+state 76
+	term : CASE LPAREN ty_def . COMMA term RPAREN branches  (49)
+
+	COMMA  shift 116
 	.  error
 
 
 state 77
-	ty_dec : NEWTYPE UIDENT EQ . UIDENT ty_def SEMI  (15)
+	data_type_head : DATA UIDENT ty_kr_list . WHERE  (19)
 
-	UIDENT  shift 115
+	WHERE  shift 117
 	.  error
 
 
 state 78
-	term : LPAREN term ARROW . proof RPAREN  (51)
+	ty_dec : NEWTYPE UIDENT EQ . UIDENT ty_def SEMI  (15)
 
-	FORALL  shift 37
-	LIDENT  shift 38
-	LPAREN  shift 39
-	LTRI  shift 40
+	UIDENT  shift 118
 	.  error
-
-	proof  goto 116
 
 
 state 79
-	term : LPAREN term RPAREN .  (52)
-
-	.  reduce 52
-
-
-state 80
-	term : LPAREN term AT . proof RPAREN  (50)
+	term : LPAREN term ARROW . proof RPAREN  (52)
 
 	FORALL  shift 37
 	LIDENT  shift 38
@@ -854,11 +851,29 @@ state 80
 	LTRI  shift 40
 	.  error
 
-	proof  goto 117
+	proof  goto 119
+
+
+state 80
+	term : LPAREN term RPAREN .  (53)
+
+	.  reduce 53
 
 
 state 81
-	term : LPAREN term TAPP . ty_def RPAREN  (46)
+	term : LPAREN term AT . proof RPAREN  (51)
+
+	FORALL  shift 37
+	LIDENT  shift 38
+	LPAREN  shift 39
+	LTRI  shift 40
+	.  error
+
+	proof  goto 120
+
+
+state 82
+	term : LPAREN term TAPP . ty_def RPAREN  (47)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -866,84 +881,84 @@ state 81
 	LPAREN  shift 34
 	.  error
 
-	ty_def  goto 118
-
-
-state 82
-	term : LPAREN term term . RPAREN  (44)
-
-	RPAREN  shift 119
-	.  error
+	ty_def  goto 121
 
 
 state 83
-	term : LAMBDA LIDENT COLON . ty_def ARROW term  (43)
-	term : LAMBDA LIDENT COLON . kind_and_role ARROW term  (45)
+	term : LPAREN term term . RPAREN  (45)
+
+	RPAREN  shift 122
+	.  error
+
+
+state 84
+	term : LAMBDA LIDENT COLON . ty_def ARROW term  (44)
+	term : LAMBDA LIDENT COLON . kind_and_role ARROW term  (46)
 
 	FORALL  shift 31
 	LIDENT  shift 32
 	UIDENT  shift 33
 	STAR  shift 28
-	LPAREN  shift 120
+	LPAREN  shift 123
 	.  error
 
-	kind_and_role  goto 121
-	ty_def  goto 122
-
-
-state 84
-	term : LAMBDA LPAREN LIDENT . COLON ty_def TILDE ty_def ARROW term  (49)
-
-	COLON  shift 123
-	.  error
+	kind_and_role  goto 124
+	ty_def  goto 125
 
 
 state 85
+	term : LAMBDA LPAREN LIDENT . COLON ty_def TILDE ty_def ARROW term  (50)
+
+	COLON  shift 126
+	.  error
+
+
+state 86
 	input_aux : input_aux term SEMI .  (6)
 
 	.  reduce 6
 
 
-state 86
-	clauses : LBRACKET clauses_aux . RBRACKET  (28)
-	clauses_aux : clauses_aux . clause  (30)
+state 87
+	clauses : LBRACKET clauses_aux . RBRACKET  (29)
+	clauses_aux : clauses_aux . clause  (31)
 
 	UIDENT  shift 43
-	RBRACKET  shift 124
+	RBRACKET  shift 127
 	.  error
 
-	clause  goto 125
+	clause  goto 128
 
 
-state 87
+state 88
 	ty_dec : data_type_head clauses SEMI .  (14)
 
 	.  reduce 14
 
 
-state 88
+state 89
 	role : CODE .  (12)
 
 	.  reduce 12
 
 
-state 89
+state 90
 	role : TYPE .  (13)
 
 	.  reduce 13
 
 
-state 90
+state 91
 	kind_and_role : STAR SLASH role .  (11)
 
 	.  reduce 11
 
 
-state 91
+state 92
 	kind : LPAREN kind RPAREN .  (9)
 	kind_and_role : LPAREN kind RPAREN . SLASH role  (10)
 
-	SLASH  shift 126
+	SLASH  shift 129
 	$end  reduce 9
 	FORALL  reduce 9
 	LIDENT  reduce 9
@@ -952,118 +967,44 @@ state 91
 	RPAREN  reduce 9
 
 
-state 92
+state 93
 	kind : kind_and_role ARROW kind .  (8)
 
 	.  reduce 8
 
 
-state 93
+state 94
 	kind_and_role : LPAREN kind RPAREN . SLASH role  (10)
 
-	SLASH  shift 126
+	SLASH  shift 129
 	.  error
 
 
-state 94
-	ty_def : FORALL LIDENT COLON . kind_and_role ty_def  (40)
+state 95
+	ty_def : FORALL LIDENT COLON . kind_and_role ty_def  (41)
 
 	STAR  shift 28
 	LPAREN  shift 29
 	.  error
 
-	kind_and_role  goto 127
-
-
-state 95
-	ty_def : LPAREN ARROW RPAREN .  (34)
-
-	.  reduce 34
+	kind_and_role  goto 130
 
 
 state 96
-	ty_def : LPAREN TILDE kind . RPAREN  (36)
+	ty_def : LPAREN ARROW RPAREN .  (35)
 
-	RPAREN  shift 128
-	.  error
+	.  reduce 35
 
 
 state 97
-	ty_def : LPAREN ty_def ARROW . ty_def RPAREN  (35)
-
-	FORALL  shift 31
-	LIDENT  shift 32
-	UIDENT  shift 33
-	LPAREN  shift 34
-	.  error
-
-	ty_def  goto 129
-
-
-state 98
-	ty_def : LPAREN ty_def RPAREN .  (41)
-
-	.  reduce 41
-
-
-state 99
-	ty_def : LPAREN ty_def TILDE . kind ty_def RPAREN FARROW ty_def  (37)
-
-	STAR  shift 24
-	LPAREN  shift 25
-	.  error
-
-	kind  goto 130
-	kind_and_role  goto 27
-
-
-state 100
-	ty_def : LPAREN ty_def ty_def . RPAREN  (39)
+	ty_def : LPAREN TILDE kind . RPAREN  (37)
 
 	RPAREN  shift 131
 	.  error
 
 
-state 101
-	proof : FORALL LPAREN LIDENT . COLON kind_and_role RPAREN proof  (62)
-
-	COLON  shift 132
-	.  error
-
-
-state 102
-	proof : LPAREN NTH INT . proof RPAREN  (61)
-
-	FORALL  shift 37
-	LIDENT  shift 38
-	LPAREN  shift 39
-	LTRI  shift 40
-	.  error
-
-	proof  goto 133
-
-
-state 103
-	proof : LPAREN SYM proof . RPAREN  (58)
-
-	RPAREN  shift 134
-	.  error
-
-
-state 104
-	proof : LPAREN proof SEMI . proof RPAREN  (59)
-
-	FORALL  shift 37
-	LIDENT  shift 38
-	LPAREN  shift 39
-	LTRI  shift 40
-	.  error
-
-	proof  goto 135
-
-
-state 105
-	proof : LPAREN proof AT . ty_def RPAREN  (63)
+state 98
+	ty_def : LPAREN ty_def ARROW . ty_def RPAREN  (36)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -1071,64 +1012,158 @@ state 105
 	LPAREN  shift 34
 	.  error
 
-	ty_def  goto 136
+	ty_def  goto 132
 
 
-state 106
-	proof : LPAREN proof proof . RPAREN  (60)
+state 99
+	ty_def : LPAREN ty_def RPAREN .  (42)
+
+	.  reduce 42
+
+
+state 100
+	ty_def : LPAREN ty_def TILDE . kind ty_def RPAREN FARROW ty_def  (38)
+
+	STAR  shift 24
+	LPAREN  shift 25
+	.  error
+
+	kind  goto 133
+	kind_and_role  goto 27
+
+
+state 101
+	ty_def : LPAREN ty_def ty_def . RPAREN  (40)
+
+	RPAREN  shift 134
+	.  error
+
+
+state 102
+	proof : FORALL LPAREN LIDENT . COLON kind_and_role RPAREN proof  (63)
+
+	COLON  shift 135
+	.  error
+
+
+state 103
+	proof : LPAREN NTH INT . proof RPAREN  (62)
+
+	FORALL  shift 37
+	LIDENT  shift 38
+	LPAREN  shift 39
+	LTRI  shift 40
+	.  error
+
+	proof  goto 136
+
+
+state 104
+	proof : LPAREN SYM proof . RPAREN  (59)
 
 	RPAREN  shift 137
 	.  error
 
 
+state 105
+	proof : LPAREN proof SEMI . proof RPAREN  (60)
+
+	FORALL  shift 37
+	LIDENT  shift 38
+	LPAREN  shift 39
+	LTRI  shift 40
+	.  error
+
+	proof  goto 138
+
+
+state 106
+	proof : LPAREN proof AT . ty_def RPAREN  (64)
+
+	FORALL  shift 31
+	LIDENT  shift 32
+	UIDENT  shift 33
+	LPAREN  shift 34
+	.  error
+
+	ty_def  goto 139
+
+
 state 107
-	proof : LTRI ty_def RTRI .  (57)
+	proof : LPAREN proof proof . RPAREN  (61)
 
-	.  reduce 57
-
-
-state 108
-	clause : UIDENT DOUBLECOLON LBRACKET . ty_kr_list RBRACKET ty_def  (31)
-	ty_kr_list_aux : .  (20)
-
-	.  reduce 20
-
-	ty_kr_list  goto 138
-	ty_kr_list_aux  goto 74
-
-
-state 109
-	clause : UIDENT DOUBLECOLON ty_def .  (32)
-
-	.  reduce 32
-
-
-state 110
-	ty_dec : TYPE FAMILY UIDENT ty_kr_list . SEMI  (16)
-
-	SEMI  shift 139
+	RPAREN  shift 140
 	.  error
 
 
+state 108
+	proof : LTRI ty_def RTRI .  (58)
+
+	.  reduce 58
+
+
+state 109
+	clause : UIDENT DOUBLECOLON LBRACKET . ty_kr_list RBRACKET ty_def  (32)
+	ty_kr_list_aux : .  (21)
+
+	.  reduce 21
+
+	ty_kr_list  goto 141
+	ty_kr_list_aux  goto 75
+
+
+state 110
+	clause : UIDENT DOUBLECOLON ty_def .  (33)
+
+	.  reduce 33
+
+
 state 111
-	ty_dec : TYPE INSTANCE ty_kr_list UIDENT . type_list EQ ty_def SEMI  (17)
-	type_list_aux : .  (23)
+	ty_dec : TYPE FAMILY UIDENT ty_kr_list . SEMI  (16)
 
-	.  reduce 23
-
-	type_list  goto 140
-	type_list_aux  goto 141
+	SEMI  shift 142
+	.  error
 
 
 state 112
-	ty_kr_list_aux : ty_kr_list_aux LPAREN . LIDENT COLON kind_and_role RPAREN  (21)
+	ty_dec : TYPE INSTANCE UIDENT type_list . EQ ty_def SEMI  (18)
 
-	LIDENT  shift 142
+	EQ  shift 143
 	.  error
 
 
 state 113
-	term : CASE LPAREN ty_def COMMA . term RPAREN branches  (48)
+	type_list : type_list_aux .  (23)
+	type_list_aux : type_list_aux . ty_def  (25)
+
+	FORALL  shift 31
+	LIDENT  shift 32
+	UIDENT  shift 33
+	LPAREN  shift 34
+	EQ  reduce 23
+
+	ty_def  goto 144
+
+
+state 114
+	ty_dec : TYPE INSTANCE ty_kr_list UIDENT . type_list EQ ty_def SEMI  (17)
+	type_list_aux : .  (24)
+
+	.  reduce 24
+
+	type_list  goto 145
+	type_list_aux  goto 113
+
+
+state 115
+	ty_kr_list_aux : ty_kr_list_aux LPAREN . LIDENT COLON kind_and_role RPAREN  (22)
+
+	LIDENT  shift 146
+	.  error
+
+
+state 116
+	term : CASE LPAREN ty_def COMMA . term RPAREN branches  (49)
 
 	CASE  shift 11
 	LIDENT  shift 14
@@ -1137,16 +1172,16 @@ state 113
 	LAMBDA  shift 18
 	.  error
 
-	term  goto 143
+	term  goto 147
 
 
-state 114
-	data_type_head : DATA UIDENT ty_kr_list WHERE .  (18)
+state 117
+	data_type_head : DATA UIDENT ty_kr_list WHERE .  (19)
 
-	.  reduce 18
+	.  reduce 19
 
 
-state 115
+state 118
 	ty_dec : NEWTYPE UIDENT EQ UIDENT . ty_def SEMI  (15)
 
 	FORALL  shift 31
@@ -1155,51 +1190,51 @@ state 115
 	LPAREN  shift 34
 	.  error
 
-	ty_def  goto 144
-
-
-state 116
-	term : LPAREN term ARROW proof . RPAREN  (51)
-
-	RPAREN  shift 145
-	.  error
-
-
-state 117
-	term : LPAREN term AT proof . RPAREN  (50)
-
-	RPAREN  shift 146
-	.  error
-
-
-state 118
-	term : LPAREN term TAPP ty_def . RPAREN  (46)
-
-	RPAREN  shift 147
-	.  error
+	ty_def  goto 148
 
 
 state 119
-	term : LPAREN term term RPAREN .  (44)
+	term : LPAREN term ARROW proof . RPAREN  (52)
 
-	.  reduce 44
+	RPAREN  shift 149
+	.  error
 
 
 state 120
+	term : LPAREN term AT proof . RPAREN  (51)
+
+	RPAREN  shift 150
+	.  error
+
+
+state 121
+	term : LPAREN term TAPP ty_def . RPAREN  (47)
+
+	RPAREN  shift 151
+	.  error
+
+
+state 122
+	term : LPAREN term term RPAREN .  (45)
+
+	.  reduce 45
+
+
+state 123
 	kind_and_role : LPAREN . kind RPAREN SLASH role  (10)
-	ty_def : LPAREN . ARROW RPAREN  (34)
-	ty_def : LPAREN . ty_def ARROW ty_def RPAREN  (35)
-	ty_def : LPAREN . TILDE kind RPAREN  (36)
-	ty_def : LPAREN . ty_def TILDE kind ty_def RPAREN FARROW ty_def  (37)
-	ty_def : LPAREN . ty_def ty_def RPAREN  (39)
-	ty_def : LPAREN . ty_def RPAREN  (41)
+	ty_def : LPAREN . ARROW RPAREN  (35)
+	ty_def : LPAREN . ty_def ARROW ty_def RPAREN  (36)
+	ty_def : LPAREN . TILDE kind RPAREN  (37)
+	ty_def : LPAREN . ty_def TILDE kind ty_def RPAREN FARROW ty_def  (38)
+	ty_def : LPAREN . ty_def ty_def RPAREN  (40)
+	ty_def : LPAREN . ty_def RPAREN  (42)
 
 	FORALL  shift 31
 	LIDENT  shift 32
 	UIDENT  shift 33
 	STAR  shift 24
 	ARROW  shift 63
-	LPAREN  shift 148
+	LPAREN  shift 152
 	TILDE  shift 64
 	.  error
 
@@ -1208,81 +1243,22 @@ state 120
 	ty_def  goto 65
 
 
-state 121
-	term : LAMBDA LIDENT COLON kind_and_role . ARROW term  (45)
-
-	ARROW  shift 149
-	.  error
-
-
-state 122
-	term : LAMBDA LIDENT COLON ty_def . ARROW term  (43)
-
-	ARROW  shift 150
-	.  error
-
-
-state 123
-	term : LAMBDA LPAREN LIDENT COLON . ty_def TILDE ty_def ARROW term  (49)
-
-	FORALL  shift 31
-	LIDENT  shift 32
-	UIDENT  shift 33
-	LPAREN  shift 34
-	.  error
-
-	ty_def  goto 151
-
-
 state 124
-	clauses : LBRACKET clauses_aux RBRACKET .  (28)
+	term : LAMBDA LIDENT COLON kind_and_role . ARROW term  (46)
 
-	.  reduce 28
+	ARROW  shift 153
+	.  error
 
 
 state 125
-	clauses_aux : clauses_aux clause .  (30)
+	term : LAMBDA LIDENT COLON ty_def . ARROW term  (44)
 
-	.  reduce 30
+	ARROW  shift 154
+	.  error
 
 
 state 126
-	kind_and_role : LPAREN kind RPAREN SLASH . role  (10)
-
-	CODE  shift 88
-	TYPE  shift 89
-	.  error
-
-	role  goto 152
-
-
-state 127
-	ty_def : FORALL LIDENT COLON kind_and_role . ty_def  (40)
-
-	FORALL  shift 31
-	LIDENT  shift 32
-	UIDENT  shift 33
-	LPAREN  shift 34
-	.  error
-
-	ty_def  goto 153
-
-
-state 128
-	ty_def : LPAREN TILDE kind RPAREN .  (36)
-
-	.  reduce 36
-
-
-state 129
-	ty_def : LPAREN ty_def ARROW ty_def . RPAREN  (35)
-
-	RPAREN  shift 154
-	.  error
-
-
-state 130
-	ty_def : LPAREN ty_def TILDE kind . ty_def RPAREN FARROW ty_def  (37)
+	term : LAMBDA LPAREN LIDENT COLON . ty_def TILDE ty_def ARROW term  (50)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -1293,143 +1269,207 @@ state 130
 	ty_def  goto 155
 
 
-state 131
-	ty_def : LPAREN ty_def ty_def RPAREN .  (39)
+state 127
+	clauses : LBRACKET clauses_aux RBRACKET .  (29)
 
-	.  reduce 39
+	.  reduce 29
 
 
-state 132
-	proof : FORALL LPAREN LIDENT COLON . kind_and_role RPAREN proof  (62)
+state 128
+	clauses_aux : clauses_aux clause .  (31)
 
-	STAR  shift 28
-	LPAREN  shift 29
+	.  reduce 31
+
+
+state 129
+	kind_and_role : LPAREN kind RPAREN SLASH . role  (10)
+
+	CODE  shift 89
+	TYPE  shift 90
 	.  error
 
-	kind_and_role  goto 156
+	role  goto 156
 
 
-state 133
-	proof : LPAREN NTH INT proof . RPAREN  (61)
-
-	RPAREN  shift 157
-	.  error
-
-
-state 134
-	proof : LPAREN SYM proof RPAREN .  (58)
-
-	.  reduce 58
-
-
-state 135
-	proof : LPAREN proof SEMI proof . RPAREN  (59)
-
-	RPAREN  shift 158
-	.  error
-
-
-state 136
-	proof : LPAREN proof AT ty_def . RPAREN  (63)
-
-	RPAREN  shift 159
-	.  error
-
-
-state 137
-	proof : LPAREN proof proof RPAREN .  (60)
-
-	.  reduce 60
-
-
-state 138
-	clause : UIDENT DOUBLECOLON LBRACKET ty_kr_list . RBRACKET ty_def  (31)
-
-	RBRACKET  shift 160
-	.  error
-
-
-state 139
-	ty_dec : TYPE FAMILY UIDENT ty_kr_list SEMI .  (16)
-
-	.  reduce 16
-
-
-state 140
-	ty_dec : TYPE INSTANCE ty_kr_list UIDENT type_list . EQ ty_def SEMI  (17)
-
-	EQ  shift 161
-	.  error
-
-
-state 141
-	type_list : type_list_aux .  (22)
-	type_list_aux : type_list_aux . ty_def  (24)
+state 130
+	ty_def : FORALL LIDENT COLON kind_and_role . ty_def  (41)
 
 	FORALL  shift 31
 	LIDENT  shift 32
 	UIDENT  shift 33
 	LPAREN  shift 34
-	EQ  reduce 22
+	.  error
 
-	ty_def  goto 162
+	ty_def  goto 157
+
+
+state 131
+	ty_def : LPAREN TILDE kind RPAREN .  (37)
+
+	.  reduce 37
+
+
+state 132
+	ty_def : LPAREN ty_def ARROW ty_def . RPAREN  (36)
+
+	RPAREN  shift 158
+	.  error
+
+
+state 133
+	ty_def : LPAREN ty_def TILDE kind . ty_def RPAREN FARROW ty_def  (38)
+
+	FORALL  shift 31
+	LIDENT  shift 32
+	UIDENT  shift 33
+	LPAREN  shift 34
+	.  error
+
+	ty_def  goto 159
+
+
+state 134
+	ty_def : LPAREN ty_def ty_def RPAREN .  (40)
+
+	.  reduce 40
+
+
+state 135
+	proof : FORALL LPAREN LIDENT COLON . kind_and_role RPAREN proof  (63)
+
+	STAR  shift 28
+	LPAREN  shift 29
+	.  error
+
+	kind_and_role  goto 160
+
+
+state 136
+	proof : LPAREN NTH INT proof . RPAREN  (62)
+
+	RPAREN  shift 161
+	.  error
+
+
+state 137
+	proof : LPAREN SYM proof RPAREN .  (59)
+
+	.  reduce 59
+
+
+state 138
+	proof : LPAREN proof SEMI proof . RPAREN  (60)
+
+	RPAREN  shift 162
+	.  error
+
+
+state 139
+	proof : LPAREN proof AT ty_def . RPAREN  (64)
+
+	RPAREN  shift 163
+	.  error
+
+
+state 140
+	proof : LPAREN proof proof RPAREN .  (61)
+
+	.  reduce 61
+
+
+state 141
+	clause : UIDENT DOUBLECOLON LBRACKET ty_kr_list . RBRACKET ty_def  (32)
+
+	RBRACKET  shift 164
+	.  error
 
 
 state 142
-	ty_kr_list_aux : ty_kr_list_aux LPAREN LIDENT . COLON kind_and_role RPAREN  (21)
+	ty_dec : TYPE FAMILY UIDENT ty_kr_list SEMI .  (16)
 
-	COLON  shift 163
-	.  error
+	.  reduce 16
 
 
 state 143
-	term : CASE LPAREN ty_def COMMA term . RPAREN branches  (48)
+	ty_dec : TYPE INSTANCE UIDENT type_list EQ . ty_def SEMI  (18)
 
-	RPAREN  shift 164
+	FORALL  shift 31
+	LIDENT  shift 32
+	UIDENT  shift 33
+	LPAREN  shift 34
 	.  error
+
+	ty_def  goto 165
 
 
 state 144
-	ty_dec : NEWTYPE UIDENT EQ UIDENT ty_def . SEMI  (15)
+	type_list_aux : type_list_aux ty_def .  (25)
 
-	SEMI  shift 165
-	.  error
+	.  reduce 25
 
 
 state 145
-	term : LPAREN term ARROW proof RPAREN .  (51)
+	ty_dec : TYPE INSTANCE ty_kr_list UIDENT type_list . EQ ty_def SEMI  (17)
+
+	EQ  shift 166
+	.  error
+
+
+state 146
+	ty_kr_list_aux : ty_kr_list_aux LPAREN LIDENT . COLON kind_and_role RPAREN  (22)
+
+	COLON  shift 167
+	.  error
+
+
+state 147
+	term : CASE LPAREN ty_def COMMA term . RPAREN branches  (49)
+
+	RPAREN  shift 168
+	.  error
+
+
+state 148
+	ty_dec : NEWTYPE UIDENT EQ UIDENT ty_def . SEMI  (15)
+
+	SEMI  shift 169
+	.  error
+
+
+state 149
+	term : LPAREN term ARROW proof RPAREN .  (52)
+
+	.  reduce 52
+
+
+state 150
+	term : LPAREN term AT proof RPAREN .  (51)
 
 	.  reduce 51
 
 
-state 146
-	term : LPAREN term AT proof RPAREN .  (50)
+state 151
+	term : LPAREN term TAPP ty_def RPAREN .  (47)
 
-	.  reduce 50
-
-
-state 147
-	term : LPAREN term TAPP ty_def RPAREN .  (46)
-
-	.  reduce 46
+	.  reduce 47
 
 
-state 148
+state 152
 	kind : LPAREN . kind RPAREN  (9)
 	kind_and_role : LPAREN . kind RPAREN SLASH role  (10)
-	ty_def : LPAREN . ARROW RPAREN  (34)
-	ty_def : LPAREN . ty_def ARROW ty_def RPAREN  (35)
-	ty_def : LPAREN . TILDE kind RPAREN  (36)
-	ty_def : LPAREN . ty_def TILDE kind ty_def RPAREN FARROW ty_def  (37)
-	ty_def : LPAREN . ty_def ty_def RPAREN  (39)
-	ty_def : LPAREN . ty_def RPAREN  (41)
+	ty_def : LPAREN . ARROW RPAREN  (35)
+	ty_def : LPAREN . ty_def ARROW ty_def RPAREN  (36)
+	ty_def : LPAREN . TILDE kind RPAREN  (37)
+	ty_def : LPAREN . ty_def TILDE kind ty_def RPAREN FARROW ty_def  (38)
+	ty_def : LPAREN . ty_def ty_def RPAREN  (40)
+	ty_def : LPAREN . ty_def RPAREN  (42)
 
 	FORALL  shift 31
 	LIDENT  shift 32
 	UIDENT  shift 33
 	STAR  shift 24
 	ARROW  shift 63
-	LPAREN  shift 148
+	LPAREN  shift 152
 	TILDE  shift 64
 	.  error
 
@@ -1438,8 +1478,8 @@ state 148
 	ty_def  goto 65
 
 
-state 149
-	term : LAMBDA LIDENT COLON kind_and_role ARROW . term  (45)
+state 153
+	term : LAMBDA LIDENT COLON kind_and_role ARROW . term  (46)
 
 	CASE  shift 11
 	LIDENT  shift 14
@@ -1448,11 +1488,11 @@ state 149
 	LAMBDA  shift 18
 	.  error
 
-	term  goto 166
+	term  goto 170
 
 
-state 150
-	term : LAMBDA LIDENT COLON ty_def ARROW . term  (43)
+state 154
+	term : LAMBDA LIDENT COLON ty_def ARROW . term  (44)
 
 	CASE  shift 11
 	LIDENT  shift 14
@@ -1461,68 +1501,68 @@ state 150
 	LAMBDA  shift 18
 	.  error
 
-	term  goto 167
+	term  goto 171
 
 
-state 151
-	term : LAMBDA LPAREN LIDENT COLON ty_def . TILDE ty_def ARROW term  (49)
+state 155
+	term : LAMBDA LPAREN LIDENT COLON ty_def . TILDE ty_def ARROW term  (50)
 
-	TILDE  shift 168
+	TILDE  shift 172
 	.  error
 
 
-state 152
+state 156
 	kind_and_role : LPAREN kind RPAREN SLASH role .  (10)
 
 	.  reduce 10
 
 
-state 153
-	ty_def : FORALL LIDENT COLON kind_and_role ty_def .  (40)
-
-	.  reduce 40
-
-
-state 154
-	ty_def : LPAREN ty_def ARROW ty_def RPAREN .  (35)
-
-	.  reduce 35
-
-
-state 155
-	ty_def : LPAREN ty_def TILDE kind ty_def . RPAREN FARROW ty_def  (37)
-
-	RPAREN  shift 169
-	.  error
-
-
-state 156
-	proof : FORALL LPAREN LIDENT COLON kind_and_role . RPAREN proof  (62)
-
-	RPAREN  shift 170
-	.  error
-
-
 state 157
-	proof : LPAREN NTH INT proof RPAREN .  (61)
+	ty_def : FORALL LIDENT COLON kind_and_role ty_def .  (41)
 
-	.  reduce 61
+	.  reduce 41
 
 
 state 158
-	proof : LPAREN proof SEMI proof RPAREN .  (59)
+	ty_def : LPAREN ty_def ARROW ty_def RPAREN .  (36)
 
-	.  reduce 59
+	.  reduce 36
 
 
 state 159
-	proof : LPAREN proof AT ty_def RPAREN .  (63)
+	ty_def : LPAREN ty_def TILDE kind ty_def . RPAREN FARROW ty_def  (38)
 
-	.  reduce 63
+	RPAREN  shift 173
+	.  error
 
 
 state 160
-	clause : UIDENT DOUBLECOLON LBRACKET ty_kr_list RBRACKET . ty_def  (31)
+	proof : FORALL LPAREN LIDENT COLON kind_and_role . RPAREN proof  (63)
+
+	RPAREN  shift 174
+	.  error
+
+
+state 161
+	proof : LPAREN NTH INT proof RPAREN .  (62)
+
+	.  reduce 62
+
+
+state 162
+	proof : LPAREN proof SEMI proof RPAREN .  (60)
+
+	.  reduce 60
+
+
+state 163
+	proof : LPAREN proof AT ty_def RPAREN .  (64)
+
+	.  reduce 64
+
+
+state 164
+	clause : UIDENT DOUBLECOLON LBRACKET ty_kr_list RBRACKET . ty_def  (32)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -1530,10 +1570,17 @@ state 160
 	LPAREN  shift 34
 	.  error
 
-	ty_def  goto 171
+	ty_def  goto 175
 
 
-state 161
+state 165
+	ty_dec : TYPE INSTANCE UIDENT type_list EQ ty_def . SEMI  (18)
+
+	SEMI  shift 176
+	.  error
+
+
+state 166
 	ty_dec : TYPE INSTANCE ty_kr_list UIDENT type_list EQ . ty_def SEMI  (17)
 
 	FORALL  shift 31
@@ -1542,54 +1589,48 @@ state 161
 	LPAREN  shift 34
 	.  error
 
-	ty_def  goto 172
+	ty_def  goto 177
 
 
-state 162
-	type_list_aux : type_list_aux ty_def .  (24)
-
-	.  reduce 24
-
-
-state 163
-	ty_kr_list_aux : ty_kr_list_aux LPAREN LIDENT COLON . kind_and_role RPAREN  (21)
+state 167
+	ty_kr_list_aux : ty_kr_list_aux LPAREN LIDENT COLON . kind_and_role RPAREN  (22)
 
 	STAR  shift 28
 	LPAREN  shift 29
 	.  error
 
-	kind_and_role  goto 173
+	kind_and_role  goto 178
 
 
-state 164
-	term : CASE LPAREN ty_def COMMA term RPAREN . branches  (48)
+state 168
+	term : CASE LPAREN ty_def COMMA term RPAREN . branches  (49)
 
-	LBRACKET  shift 174
+	LBRACKET  shift 179
 	.  error
 
-	branches  goto 175
+	branches  goto 180
 
 
-state 165
+state 169
 	ty_dec : NEWTYPE UIDENT EQ UIDENT ty_def SEMI .  (15)
 
 	.  reduce 15
 
 
-state 166
-	term : LAMBDA LIDENT COLON kind_and_role ARROW term .  (45)
+state 170
+	term : LAMBDA LIDENT COLON kind_and_role ARROW term .  (46)
 
-	.  reduce 45
-
-
-state 167
-	term : LAMBDA LIDENT COLON ty_def ARROW term .  (43)
-
-	.  reduce 43
+	.  reduce 46
 
 
-state 168
-	term : LAMBDA LPAREN LIDENT COLON ty_def TILDE . ty_def ARROW term  (49)
+state 171
+	term : LAMBDA LIDENT COLON ty_def ARROW term .  (44)
+
+	.  reduce 44
+
+
+state 172
+	term : LAMBDA LPAREN LIDENT COLON ty_def TILDE . ty_def ARROW term  (50)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -1597,18 +1638,18 @@ state 168
 	LPAREN  shift 34
 	.  error
 
-	ty_def  goto 176
+	ty_def  goto 181
 
 
-state 169
-	ty_def : LPAREN ty_def TILDE kind ty_def RPAREN . FARROW ty_def  (37)
+state 173
+	ty_def : LPAREN ty_def TILDE kind ty_def RPAREN . FARROW ty_def  (38)
 
-	FARROW  shift 177
+	FARROW  shift 182
 	.  error
 
 
-state 170
-	proof : FORALL LPAREN LIDENT COLON kind_and_role RPAREN . proof  (62)
+state 174
+	proof : FORALL LPAREN LIDENT COLON kind_and_role RPAREN . proof  (63)
 
 	FORALL  shift 37
 	LIDENT  shift 38
@@ -1616,53 +1657,59 @@ state 170
 	LTRI  shift 40
 	.  error
 
-	proof  goto 178
-
-
-state 171
-	clause : UIDENT DOUBLECOLON LBRACKET ty_kr_list RBRACKET ty_def .  (31)
-
-	.  reduce 31
-
-
-state 172
-	ty_dec : TYPE INSTANCE ty_kr_list UIDENT type_list EQ ty_def . SEMI  (17)
-
-	SEMI  shift 179
-	.  error
-
-
-state 173
-	ty_kr_list_aux : ty_kr_list_aux LPAREN LIDENT COLON kind_and_role . RPAREN  (21)
-
-	RPAREN  shift 180
-	.  error
-
-
-state 174
-	branches : LBRACKET . bs RBRACKET  (53)
-	bs : .  (54)
-
-	.  reduce 54
-
-	bs  goto 181
+	proof  goto 183
 
 
 state 175
-	term : CASE LPAREN ty_def COMMA term RPAREN branches .  (48)
+	clause : UIDENT DOUBLECOLON LBRACKET ty_kr_list RBRACKET ty_def .  (32)
 
-	.  reduce 48
+	.  reduce 32
 
 
 state 176
-	term : LAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def . ARROW term  (49)
+	ty_dec : TYPE INSTANCE UIDENT type_list EQ ty_def SEMI .  (18)
 
-	ARROW  shift 182
-	.  error
+	.  reduce 18
 
 
 state 177
-	ty_def : LPAREN ty_def TILDE kind ty_def RPAREN FARROW . ty_def  (37)
+	ty_dec : TYPE INSTANCE ty_kr_list UIDENT type_list EQ ty_def . SEMI  (17)
+
+	SEMI  shift 184
+	.  error
+
+
+state 178
+	ty_kr_list_aux : ty_kr_list_aux LPAREN LIDENT COLON kind_and_role . RPAREN  (22)
+
+	RPAREN  shift 185
+	.  error
+
+
+state 179
+	branches : LBRACKET . bs RBRACKET  (54)
+	bs : .  (55)
+
+	.  reduce 55
+
+	bs  goto 186
+
+
+state 180
+	term : CASE LPAREN ty_def COMMA term RPAREN branches .  (49)
+
+	.  reduce 49
+
+
+state 181
+	term : LAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def . ARROW term  (50)
+
+	ARROW  shift 187
+	.  error
+
+
+state 182
+	ty_def : LPAREN ty_def TILDE kind ty_def RPAREN FARROW . ty_def  (38)
 
 	FORALL  shift 31
 	LIDENT  shift 32
@@ -1670,76 +1717,38 @@ state 177
 	LPAREN  shift 34
 	.  error
 
-	ty_def  goto 183
+	ty_def  goto 188
 
 
-state 178
-	proof : FORALL LPAREN LIDENT COLON kind_and_role RPAREN proof .  (62)
+state 183
+	proof : FORALL LPAREN LIDENT COLON kind_and_role RPAREN proof .  (63)
 
-	.  reduce 62
+	.  reduce 63
 
 
-state 179
+state 184
 	ty_dec : TYPE INSTANCE ty_kr_list UIDENT type_list EQ ty_def SEMI .  (17)
 
 	.  reduce 17
 
 
-state 180
-	ty_kr_list_aux : ty_kr_list_aux LPAREN LIDENT COLON kind_and_role RPAREN .  (21)
-
-	.  reduce 21
-
-
-state 181
-	branches : LBRACKET bs . RBRACKET  (53)
-	bs : bs . UIDENT FARROW term SEMI  (55)
-
-	UIDENT  shift 184
-	RBRACKET  shift 185
-	.  error
-
-
-state 182
-	term : LAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW . term  (49)
-
-	CASE  shift 11
-	LIDENT  shift 14
-	UIDENT  shift 15
-	LPAREN  shift 16
-	LAMBDA  shift 18
-	.  error
-
-	term  goto 186
-
-
-state 183
-	ty_def : LPAREN ty_def TILDE kind ty_def RPAREN FARROW ty_def .  (37)
-
-	.  reduce 37
-
-
-state 184
-	bs : bs UIDENT . FARROW term SEMI  (55)
-
-	FARROW  shift 187
-	.  error
-
-
 state 185
-	branches : LBRACKET bs RBRACKET .  (53)
+	ty_kr_list_aux : ty_kr_list_aux LPAREN LIDENT COLON kind_and_role RPAREN .  (22)
 
-	.  reduce 53
+	.  reduce 22
 
 
 state 186
-	term : LAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term .  (49)
+	branches : LBRACKET bs . RBRACKET  (54)
+	bs : bs . UIDENT FARROW term SEMI  (56)
 
-	.  reduce 49
+	UIDENT  shift 189
+	RBRACKET  shift 190
+	.  error
 
 
 state 187
-	bs : bs UIDENT FARROW . term SEMI  (55)
+	term : LAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW . term  (50)
 
 	CASE  shift 11
 	LIDENT  shift 14
@@ -1748,27 +1757,68 @@ state 187
 	LAMBDA  shift 18
 	.  error
 
-	term  goto 188
+	term  goto 191
 
 
 state 188
-	bs : bs UIDENT FARROW term . SEMI  (55)
+	ty_def : LPAREN ty_def TILDE kind ty_def RPAREN FARROW ty_def .  (38)
 
-	SEMI  shift 189
-	.  error
+	.  reduce 38
 
 
 state 189
-	bs : bs UIDENT FARROW term SEMI .  (55)
+	bs : bs UIDENT . FARROW term SEMI  (56)
 
-	.  reduce 55
+	FARROW  shift 192
+	.  error
+
+
+state 190
+	branches : LBRACKET bs RBRACKET .  (54)
+
+	.  reduce 54
+
+
+state 191
+	term : LAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term .  (50)
+
+	.  reduce 50
+
+
+state 192
+	bs : bs UIDENT FARROW . term SEMI  (56)
+
+	CASE  shift 11
+	LIDENT  shift 14
+	UIDENT  shift 15
+	LPAREN  shift 16
+	LAMBDA  shift 18
+	.  error
+
+	term  goto 193
+
+
+state 193
+	bs : bs UIDENT FARROW term . SEMI  (56)
+
+	SEMI  shift 194
+	.  error
+
+
+state 194
+	bs : bs UIDENT FARROW term SEMI .  (56)
+
+	.  reduce 56
 
 
 Rules never reduced:
-	tylist : tylist_aux  (25)
-	tylist_aux :  (26)
-	tylist_aux : tylist LIDENT  (27)
+	tylist : tylist_aux  (26)
+	tylist_aux :  (27)
+	tylist_aux : tylist LIDENT  (28)
+
+
+State 46 contains 1 shift/reduce conflict.
 
 
 45 terminals, 23 nonterminals
-72 grammar rules, 190 states
+73 grammar rules, 195 states
