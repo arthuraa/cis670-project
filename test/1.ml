@@ -52,12 +52,12 @@ TYPE INSTANCE { (a:*/C) } F (Maybe a) = (Tuple a)
 
 NEWTYPE Age = MkAge Nat ;
 
-
-
 DATA Unit WHERE {
   U :: Unit
 }
 ;
+
+TYPE INSTANCE F Age = Unit;
 
 LET mono_id : (Unit -> Unit) = \ x : Unit ->  x
 ;
@@ -76,9 +76,13 @@ LET coer_age_nat = \x : (Age) -> (x -> MkAge);
 
 LET coer_nat_age = \x : (Nat) -> (x -> (SYM MkAge));
 
-LET maybe_inc = \x : (Maybe Nat) -> CASE (Nat, x) {
+LET maybe_inc : ((Maybe Nat) -> Nat) = \x : (Maybe Nat) -> CASE (Nat, x) {
   Just => \y : Nat -> (S y);
   Nothing => Z;
 };
 
 LET maybe_age = \x : (Maybe Age) -> (maybe_inc (x -> (<Maybe> MkAge)));
+
+(* This shouldn't typecheck *)
+
+LET bogus = \x : (F Age) -> (x -> (<F> MkAge));
