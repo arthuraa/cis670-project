@@ -76,13 +76,13 @@ LET coer_age_nat = \x : (Age) -> (x -> MkAge);
 
 LET coer_nat_age = \x : (Nat) -> (x -> (SYM MkAge));
 
-<<<<<<< HEAD
+
 LET mono_id_test = \x : Unit -> (mono_id x) ; 
-=======
-LET maybe_inc = \x : (Maybe Nat) -> CASE (Nat, x) {
+
+LET maybe_inc : ((Maybe Nat) -> Nat) = \x : (Maybe Nat) -> CASE (Nat, x) {
   Just => \y : Nat -> (S y);
   Nothing => Z;
 };
 
 LET maybe_age = \x : (Maybe Age) -> (maybe_inc (x -> (<Maybe> MkAge)));
->>>>>>> 5e430b64a62b08823d4b115b8ef96ec9b3100327
+
