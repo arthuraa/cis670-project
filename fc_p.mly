@@ -314,6 +314,14 @@ term: LIDENT {FCVar $1}
           let ty = $4 in 
           let term = $6 in 
           Hashtbl.add term_tbl name (term,Some ty);
+
+          (match Check_term.type_check !Cxt.cxt term with 
+              Some ty' when ty' = ty 
+                       -> cxt := (name,BTermVar ty) :: !cxt 
+            | None -> 
+              prerr_endline 
+                ( name ^ "does not type check during parsing") )
+                ;
           term 
         }
 ;
@@ -341,7 +349,7 @@ proof: LIDENT {
     let tylist = List.map (fun (x,_) -> TyVar x) tys in 
     CPAssump (proof, tylist)
   with Not_found 
-      -> (prerr_endline ("proof" ^ proof ^ "not found");
+      -> (prerr_endline ("proof " ^ proof ^ " not found");
             raise Not_found 
       )
     }

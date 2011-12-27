@@ -85,4 +85,3 @@ LET maybe_age = \x : (Maybe Age) -> ((\x : (Maybe Nat) -> CASE (Nat, x) {
   Just => \y : Nat -> (S y);
   Nothing => Z;
 }) (x -> (<Maybe> MkAge)));
-
