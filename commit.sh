@@ -11,5 +11,5 @@ git push origin master
 # git rm syntax.ml
 
 git add -u
-
+git commit -m 'delete removed files'
 # It deletes all removed files and updates what was modified. Just doesn't add new files. It's better because if you have a file named "deleted.txt" it will also be removed.

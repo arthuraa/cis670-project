@@ -1,0 +1,1 @@
+make all &&  ocaml -I _build _build/prj.cma -init driver.ml

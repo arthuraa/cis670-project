@@ -17,4 +17,9 @@ parse :
 	# # 	$CLEANSCRIPT
 	# # endif 
 	ocamlbuild fc_l.inferred.mli
+	mv ./_build/fc_l.inferred.mli ./fc_l.mli
 	ocamlbuild  fc_l.byte -- 
+prj:
+	ocamlbuild prj.cma
+
+all:  parse prj

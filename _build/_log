@@ -1,32 +1,44 @@
 ### Starting build.
-# Target: fc_l.mli.depends, tags: { extension:mli, file:fc_l.mli, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -modules fc_l.mli > fc_l.mli.depends # cached
-# Target: fc_p.mly, tags: { extension:mly, file:fc_p.mly, ocaml, ocamlyacc, parser, quiet, traverse }
-/Users/bob/SourceCode/ML/godi/bin/ocamlyacc fc_p.mly # cached
-# Target: fc_p.mli.depends, tags: { extension:mli, file:fc_p.mli, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -modules fc_p.mli > fc_p.mli.depends # cached
+# Target: util.ml.depends, tags: { extension:ml, file:util.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules util.ml > util.ml.depends # cached
 # Target: fc_syntax.ml.depends, tags: { extension:ml, file:fc_syntax.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -modules fc_syntax.ml > fc_syntax.ml.depends # cached
 # Target: fc_syntax.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:fc_syntax.cmo, file:fc_syntax.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -o fc_syntax.cmo fc_syntax.ml # cached
+# Target: util.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:util.cmo, file:util.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o util.cmo util.ml # cached
+# Target: fc_p.mly, tags: { extension:mly, file:fc_p.mly, ocaml, ocamlyacc, parser, quiet, traverse }
+/Users/bob/SourceCode/ML/godi/bin/ocamlyacc fc_p.mly # cached
+# Target: fc_p.mli.depends, tags: { extension:mli, file:fc_p.mli, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules fc_p.mli > fc_p.mli.depends # cached
 # Target: fc_p.cmi, tags: { byte, compile, extension:mli, file:fc_p.mli, interf, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -o fc_p.cmi fc_p.mli # cached
+# Target: fc_p.ml.depends, tags: { extension:ml, file:fc_p.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules fc_p.ml > fc_p.ml.depends # cached
+# Target: cxt.ml.depends, tags: { extension:ml, file:cxt.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules cxt.ml > cxt.ml.depends # cached
+# Target: cxt.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:cxt.cmo, file:cxt.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o cxt.cmo cxt.ml # cached
+# Target: fc_p.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:fc_p.cmo, file:fc_p.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o fc_p.cmo fc_p.ml # cached
+# Target: check_term.ml.depends, tags: { extension:ml, file:check_term.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules check_term.ml > check_term.ml.depends # cached
+# Target: check_term.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:check_term.cmo, file:check_term.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o check_term.cmo check_term.ml # cached
+# Target: fc_l.mli.depends, tags: { extension:mli, file:fc_l.mli, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules fc_l.mli > fc_l.mli.depends # cached
 # Target: fc_l.cmi, tags: { byte, compile, extension:mli, file:fc_l.mli, interf, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -o fc_l.cmi fc_l.mli # cached
 # Target: fc_l.mll, tags: { extension:mll, file:fc_l.mll, lexer, ocaml, ocamllex, quiet, traverse }
 /Users/bob/SourceCode/ML/godi/bin/ocamllex.opt -q fc_l.mll # cached
 # Target: fc_l.ml.depends, tags: { extension:ml, file:fc_l.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -modules fc_l.ml > fc_l.ml.depends # cached
-# Target: util.ml.depends, tags: { extension:ml, file:util.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -modules util.ml > util.ml.depends # cached
-# Target: util.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:util.cmo, file:util.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -o util.cmo util.ml # cached
 # Target: fc_l.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:fc_l.cmo, file:fc_l.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -o fc_l.cmo fc_l.ml # cached
-# Target: fc_p.ml.depends, tags: { extension:ml, file:fc_p.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -modules fc_p.ml > fc_p.ml.depends # cached
-# Target: fc_p.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:fc_p.cmo, file:fc_p.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -o fc_p.cmo fc_p.ml # cached
-# Target: fc_l.byte, tags: { byte, dont_link_with, extension:byte, file:fc_l.byte, link, ocaml, program, quiet, traverse }
-ocamlfind ocamlc -linkpkg fc_syntax.cmo fc_p.cmo util.cmo fc_l.cmo -o fc_l.byte # cached
+# Target: test.ml.depends, tags: { extension:ml, file:test.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -modules test.ml > test.ml.depends # cached
+# Target: test.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:test.cmo, file:test.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -o test.cmo test.ml # cached
+# Target: prj.cma, tags: { byte, extension:cma, file:prj.cma, library, link, ocaml, quiet, traverse }
+ocamlfind ocamlc -a fc_syntax.cmo util.cmo cxt.cmo fc_p.cmo check_term.cmo fc_l.cmo test.cmo -o prj.cma
 # Compilation successful.

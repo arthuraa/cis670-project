@@ -1,11 +1,10 @@
 
 %{
   open Fc_syntax
+  open Util
   open Lexing 
   open Printf
-  let datatype_tbl = Hashtbl.create 30 
-  let function_tbl = Hashtbl.create 30 
-
+  open Cxt (* for some table *)
 %}
 
 %token CODE TYPE FORALL
@@ -21,11 +20,12 @@
 %token STAR SLASH ARROW
 %token LPAREN RPAREN
 %token EOF 
+%token DOT
 %token  COLON
 %token TILDE
 %token LAMBDA
 %token SEMI COMMA  LBRACKET RBRACKET 
-
+%token FARROW
 
 %token DOUBLECOLON
 %token LTRI RTRI 
@@ -40,7 +40,8 @@
 
 
 
-%start input kind kind_and_role ty_def term proof ty_dec
+%start input kind kind_and_role ty_def term proof ty_dec ty_def
+%start clause 
 
 %type <unit> input
 %type <Fc_syntax.kind>kind
@@ -49,13 +50,18 @@
 %type <Fc_syntax.fc_term> term 
 %type <Fc_syntax.co_proof> proof
 %type <unit> ty_dec
-
+%type <Fc_syntax.binder> clause 
 %%
 
 
-input: /*empty*/ {}
-  |input  ty_dec {}
-  |input  term {}
+input: EOF {} |input_aux EOF {}
+;
+
+input_aux : 
+  |ty_dec {}
+  |term {}
+  |input_aux ty_dec {}
+  |input_aux term SEMI {}
 ;
 
 kind: STAR {Star}
@@ -75,53 +81,136 @@ role: CODE { Code}
 
 
 /*
+the normal way to do context sensitive grammars in yacc is
+to overmatch and throw exceptions in the actions when the
+match was wrong
+*/
+
+
+/*
 data Maybe a where
   Just :: a -> Mabye a 
   Nothing :: Maybe a 
 
 newtype Age = MkAge Int 
-
-
 */
 
 
-ty_dec: DATA UIDENT tylist WHERE clauses SEMI {}
-    | NEWTYPE UIDENT EQ UIDENT type_list SEMI {}
-    | TYPE FAMILY UIDENT tylist DOUBLECOLON STAR SEMI {}
-    | TYPE INSTANCE UIDENT type_list EQ ty_def SEMI {}
+ty_dec:  data_type_head clauses SEMI {
+  let data_ctors = $2 in 
+  List.iter (fun c -> cxt := c :: !cxt ) data_ctors
+}
+    | NEWTYPE UIDENT EQ UIDENT  ty_def  SEMI {}
+
+    | TYPE FAMILY UIDENT ty_kr_list SEMI {
+      begin
+        Hashtbl.add function_tbl $3 (ref 0) ;
+        let krs = List.map snd $4 in 
+        let kind = list_of_krs krs in 
+        cxt := ($3, BTConst kind) :: !cxt 
+      end 
+    }
+
+    | TYPE INSTANCE ty_kr_list UIDENT type_list EQ ty_def SEMI {
+      let name = $4 in 
+      let tys = $5 in 
+      let type_cxt = $3 in 
+      let ty2 = $7 in 
+      try 
+        let count_ref = Hashtbl.find function_tbl name in 
+        let ty = TyConst (TFunction name) in 
+        let ty1 = List.fold_left (fun x y -> TyApp(x,y)) ty tys in  
+        cxt := (name ^ (string_of_int !count_ref), 
+                BCoer(type_cxt, TyEq (ty1,ty2),Code)) :: !cxt ;
+        incr count_ref 
+      with Not_found 
+          -> 
+            let err_msg = name ^ "not found in type instance declaration" in 
+            prerr_endline err_msg ; 
+            raise Not_found
+    }
+    |TYPE INSTANCE UIDENT type_list EQ ty_def SEMI {
+      let name = $3 in 
+      let tys = $4 in 
+      let type_cxt = [] in 
+      let ty2 = $6 in 
+      try 
+        let count_ref = Hashtbl.find function_tbl name in 
+        let ty = TyConst (TFunction name) in 
+        let ty1 = List.fold_left (fun x y -> TyApp(x,y)) ty tys in  
+        cxt := (name ^ (string_of_int !count_ref), 
+                BCoer(type_cxt, TyEq (ty1,ty2),Code)) :: !cxt ;
+        incr count_ref 
+      with Not_found 
+          -> 
+            let err_msg = name ^ "not found in type instance declaration" in 
+            prerr_endline err_msg ; 
+            raise Not_found
+
+    }
+
+;
+
+/* 
+  split it so we can do some side effects here 
+*/
+
+data_type_head: DATA UIDENT ty_kr_list WHERE {
+  begin 
+    let type_ctor = $2 in 
+    Hashtbl.add datatype_tbl type_ctor true;
+    let krs = List.map snd $3 in 
+    let kind = list_of_krs krs in 
+    cxt := (type_ctor, BTConst kind) :: !cxt;
+    (type_ctor, kind)
+  end 
+}
+;
+
+ty_kr_list:ty_kr_list_aux {List.rev $1 }
+ty_kr_list_aux: /*empty*/ {[]}
+    | ty_kr_list_aux LPAREN LIDENT COLON kind_and_role RPAREN  
+        { ($3,$5):: $1 }
 ;
 
 
 type_list: type_list_aux {List.rev $1 }
 ;
-
-
-
 type_list_aux : /*empty*/ { [] }
     | type_list_aux ty_def { $2::$1}
 ;
 
 tylist: tylist_aux {List.rev $1 }
 ; 
-
 tylist_aux: /*empty*/ { [] }
     |  tylist LIDENT  { $2::$1 } 
 ;
 
-clauses: LBRACKET clauses_aux RBRACKET {List.rev $2 }
-;
 
+clauses: LBRACKET clauses_aux RBRACKET {
+  List.rev $2 }
+;
 clauses_aux : /*empty*/ { [] }
-    | clauses clause { $2::$1 }
+    | clauses_aux clause { $2::$1 }
 ;
-
-clause: UIDENT DOUBLECOLON ty_def {}
+clause: UIDENT DOUBLECOLON LBRACKET ty_kr_list RBRACKET ty_def
+  {
+   ($1,BDataCon($4, $6 ))   
+  }
+    | UIDENT DOUBLECOLON ty_def 
+        {$1, BDataCon([],$3) }
 ;
 
 
 ty_def: LIDENT { TyVar $1}
     | LPAREN ARROW RPAREN {TyConst TArrow}
+
+    | LPAREN ty_def ARROW ty_def RPAREN 
+        { TyApp(TyApp((TyConst TArrow),$2),$4) }
+
     | LPAREN TILDE kind RPAREN {TyConst (TEquality $3) }
+    | LPAREN ty_def TILDE kind ty_def RPAREN FARROW ty_def
+        {TyApp(TyApp(TyApp(TyConst(TEquality $4),$2),$5),$8)}
     | UIDENT 
         { try 
             let _ = Hashtbl.find datatype_tbl $1 in 
@@ -131,18 +220,19 @@ ty_def: LIDENT { TyVar $1}
               let _ = Hashtbl.find function_tbl $1 in 
               TyConst (TFunction $1)
             with Not_found -> 
+              (* TyConst (Datatype $1) *)
               Parsing.(
-              let start_pos = rhs_start_pos 1 in 
-              let end_pos = rhs_end_pos 1 in 
-              printf "%d.%d --- %d.%d: undefined type construtor %s"
+              let start_pos = rhs_start_pos 1 in
+              let end_pos = rhs_end_pos 1 in
+              let err_msg = sprintf
+                "%d.%d --- %d.%d: undefined type construtor %s"
                 start_pos.pos_lnum (start_pos.pos_cnum -start_pos.pos_bol)
                 end_pos.pos_lnum (end_pos.pos_cnum - end_pos.pos_bol)
-                $1;
+                $1 in
+              prerr_endline err_msg ;
               raise Not_found
-              ) )
-
-             
-                
+              )
+            )
         }
 
     | LPAREN ty_def  ty_def RPAREN  {TyApp ($2, $3) }
@@ -154,14 +244,14 @@ ty_def: LIDENT { TyVar $1}
 ;
 
 term: LIDENT {FCVar $1}
-    | LAMBDA LPAREN LIDENT COLON ty_def RPAREN ARROW term 
-        {FCLam ($3,$5,$8)}
+    | LAMBDA  LIDENT COLON ty_def  ARROW term 
+        {FCLam ($2,$4,$6)}
 
     | LPAREN term  term RPAREN
         {FCApp($2, $3) }
 
-    | LAMBDA LPAREN LIDENT COLON kind_and_role RPAREN ARROW term /* BLAMBDA */
-        {FCTLam ($3,$5, $8)}
+    | LAMBDA  LIDENT COLON kind_and_role  ARROW term /* BLAMBDA */
+        {FCTLam ($2,$4, $6)}
 
     | LPAREN term TAPP ty_def RPAREN
         {FCTApp($2,$4)}
@@ -188,7 +278,7 @@ term: LIDENT {FCVar $1}
 
 branches: LBRACKET bs RBRACKET {List.rev $2}
 bs: /*empty*/  {[]}
-    | bs SEMI UIDENT ARROW term  { Branch( $3,$5 ):: $1  }
+    | bs  UIDENT FARROW term SEMI  { Branch( $2,$4 ):: $1  }
 ;
 
 proof: LIDENT { failwith "no implemented"}
