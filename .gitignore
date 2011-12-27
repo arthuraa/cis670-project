@@ -1,0 +1,11 @@
+*~
+_build
+_build/*
+build/META
+*.byte
+*.native
+/.omake*
+*.swp
+*.opt
+*.run
+apidocs

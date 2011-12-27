@@ -1,6 +1,23 @@
 open Fc_syntax
 
 let (|>) x f = f x
+let finally handler f x =
+  let r = (
+    try
+      f x
+    with
+	e -> handler(); raise e
+  ) in
+  handler();
+  r
+
+let list_of_kinds ?(c=Code) kinds = 
+  List.fold_right 
+    (fun x y -> KArrow (KR(x,c),y)) kinds Star
+
+let list_of_krs krs = 
+  List.fold_right
+    (fun x y -> KArrow(x,y)) krs Star 
 
 let rec type_subst (var : string) (ty1 : fc_type) (ty2 : fc_type) =
   (* ty2 should be closed to avoid variable capture *)

@@ -1,5 +1,4 @@
 type kind = Star | KArrow of kind_and_role * kind
-
 and role = Code | Type
 
 and kind_and_role = KR of kind * role

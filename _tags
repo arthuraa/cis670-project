@@ -1,4 +1,8 @@
+# true : use_menhir
 
+<*_ulex.ml> : syntax_camlp4o,pkg_ulex,pkg_camlp4.macro
+<*_ulex.{byte,native}> : pkg_ulex
 
 <fc_parser.ml> : pp(camlp4of)
+
 <fc_parser.{cmo,byte}> : pkg_dynlink, use_camlp4_full

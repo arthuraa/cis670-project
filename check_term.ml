@@ -133,6 +133,7 @@ let rec proof_check
             else None )
       with _ -> None
     )
+
     |CPForall (a, (KR(k',r') as kr) ,pf) -> (
       try
         let Some (ty1,ty2, KR (Star,_))= proof_check ((a, BTVar kr) ::cxt) pf  r in
@@ -140,6 +141,7 @@ let rec proof_check
               kr)
       with _ -> None
     )
+
     |CPInst (pf,ty) -> (
       try
         let Some (TyForall(a1,(KR (k'',r'') as k1'),ty1'),
