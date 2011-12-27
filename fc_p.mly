@@ -278,8 +278,9 @@ term: LIDENT {FCVar $1}
     | CASE LPAREN ty_def COMMA term RPAREN branches 
         {FCCase($3,$5,$7)}
 
-    | LAMBDA LPAREN LIDENT COLON ty_def TILDE ty_def ARROW term /* CLAMBDA */
-        {FCPLam ($3,TyEq($5,$7),$9)}
+    | LAMBDA  LIDENT COLON ty_def TILDE ty_def ARROW term 
+      /* CLAMBDA */
+        {FCPLam ($2,TyEq($4,$6),$8)}
 
     | LPAREN term AT proof RPAREN
         {FCPApp($2,$4)}

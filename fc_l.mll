@@ -158,13 +158,23 @@ and comment = parse
   let test _ = 
     let dir = "test" in 
     let test_files = Sys.readdir dir in 
-    Array.iter (fun file -> 
+    Array.map (fun file -> 
       if Filename.check_suffix file ".ml" then
         let file_name = (Filename.concat dir file ) in 
         prerr_endline ("check file: " ^ file_name);
         Cxt.clear ();
-        input_f file_name )
+        input_f file_name;
+        Hashtbl.fold (fun k term acc  -> 
+          (k, Check_term.type_check !Cxt.cxt term) :: acc 
+        ) Cxt.term_tbl []
+      else []
+    )
       test_files
+
+  (* let check_term str =  *)
+  (*     Hashtbl.find term_tbl str  *)
+  (*     |> Check_term.type_check !Cxt.cxt;; *)
+
   let rec tokens str = 
     let lexbuf = Lexing.from_string str  in 
     let rec aux lexbuf = 

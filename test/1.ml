@@ -52,9 +52,22 @@ TYPE INSTANCE { (a:*/C) } F (Maybe a) = (Tuple a)
 
 NEWTYPE Age = MkAge Nat ; 
 
-LET a = \ x: (List Nat) -> CASE (Bool,x) {
+
+DATA Unit WHERE {
+  U :: Unit 
+}
+;
+
+LET mono_id = \ x : Unit ->  x 
+;
+
+LET poly_id = \ a : */T -> (\ x : a -> x )
+;
+
+
+LET is_empty = \ x: (List Nat) -> CASE (Bool,x) {
   Nil => True ;
-  Cons => \ y:Nat -> ( \ xs : (List Nat) -> False );
+  Cons => \ x:Nat -> ( \ xs : (List Nat) -> False );
 } ;
 
 

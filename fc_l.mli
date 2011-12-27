@@ -22,5 +22,5 @@ val proof_p : string -> Fc_syntax.co_proof
 val ty_dec_p : string -> unit
 val clause_p : string -> Fc_syntax.binder
 val test_ty : unit -> Fc_syntax.fc_type list
-val test : 'a -> unit
+val test : 'a -> (string * Fc_syntax.fc_type option) list array
 val tokens : string -> Fc_p.token list
