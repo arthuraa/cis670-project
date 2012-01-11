@@ -8,7 +8,7 @@
 \newcommand{\kindt}{\(T\)\xspace}
 
 \title{CIS 670 --- Final project}
-\author{Arthur Azevedo de Amorim \\ Bob Zhang}
+\author{Arthur Azevedo de Amorim \\ Hongbo Zhang}
 
 \begin{document}
 
@@ -144,11 +144,15 @@ Haskell. Indeed, many features in Haskell, such as GADT's and
 existential types, are not directly present in System FC or \fct and
 need to be translated to those languages, sometimes in non-obvious ways.
 
+Designing an explicit concrete syntax of our language is an
+engineering work, however,it takes some time to make a robust
+parser. We did just one pass for the simple language, type-check was
+done during the parse time.
 \section{Conclusion}
 
 We've implemented a type checker for \fct, an extension of the core
 language of GHC that solves some problems related to type coercions in
-parametric and non-parametric contexts. The implementation is fairly
+parametric and non-parametric contexts. The implementation is 
 basic, but captures the essence of its type system.
 
 \bibliography{project}{}
